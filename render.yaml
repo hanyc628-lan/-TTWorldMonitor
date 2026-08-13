@@ -17,3 +17,7 @@ services:
         value: "300000"
       - key: TTWM_DATA_DIR
         value: ./data
+      - key: TTWM_PUBLISHED_AT
+        value: "2026-08-14"
+      - key: TTWM_SITE_URL
+        value: https://ttworldmonitor.onrender.com

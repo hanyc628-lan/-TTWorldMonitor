@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
 import { COUNTRY_TPI, SIGNALS, TOURNAMENTS, FEED_SOURCES, TOP_MEN, TOP_WOMEN } from '@/data/seed';
-import { formatRelativeTime } from '@/services/analysis-core';
 import { enrichTPIRecords } from '@/server/tpi-scoring';
 import { useI18n } from '@/i18n';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { SiteFooter } from '@/components/SiteFooter';
 
 export function LandingPage() {
   const { t } = useI18n();
@@ -205,12 +205,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-tt-border px-6 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-tt-muted">
-          <span>{t('landing.footer.inspired')} <a href="https://worldmonitor.app" className="text-tt-accent2 hover:underline" target="_blank" rel="noreferrer">World Monitor</a></span>
-          <span>{t('landing.footer.meta', { time: formatRelativeTime(new Date().toISOString()) })}</span>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

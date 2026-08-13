@@ -32,6 +32,7 @@ import {
   getCloudWorkerStatus,
   updateCloudPreferences,
 } from './evolution/worker.js';
+import { getPublicStats, loadVisitStats, recordVisit, type HitPayload } from './analytics/visits.js';
 
 function sendJson(res: ServerResponse, data: unknown, status = 200, headers: Record<string, string> = {}): void {
   res.writeHead(status, { 'Content-Type': 'application/json', ...headers });
@@ -225,6 +226,7 @@ export async function handleApiRoute(
       tools: TOOL_REGISTRY.length,
       cloud: cloud.running,
       evolution: cloud,
+      analytics: getPublicStats(await loadVisitStats()),
     });
     return true;
   }
@@ -266,6 +268,23 @@ export async function handleApiRoute(
       sessions: typeof body.sessions === 'number' ? body.sessions : undefined,
     });
     sendJson(res, { state });
+    return true;
+  }
+
+  if (pathname === '/api/analytics/stats' && req.method === 'GET') {
+    const stats = await loadVisitStats();
+    sendJson(res, getPublicStats(stats), 200, { 'Cache-Control': 'public, max-age=30' });
+    return true;
+  }
+
+  if (pathname === '/api/analytics/hit' && req.method === 'POST') {
+    let body: HitPayload = { path: '/' };
+    try {
+      const raw = await readBody(req);
+      if (raw) body = JSON.parse(raw) as HitPayload;
+    } catch { /* defaults */ }
+    const stats = await recordVisit(body, req);
+    sendJson(res, getPublicStats(stats));
     return true;
   }
 

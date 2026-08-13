@@ -56,6 +56,88 @@ export const zh = {
     cta: { title: '乒乓球世界不会等你。', desc: '你读到这里的时候，排名又变了，又一场冷门诞生了。先一步发现它——免费，无需账号。', btn: '先一步发现' },
     footer: { inspired: 'TTWorldMonitor — 灵感来自', meta: '数据样本截至 {time} · 开源 · MIT' },
   },
+  legal: {
+    about: '关于本站',
+    privacyLink: '隐私政策',
+    termsLink: '用户协议',
+    privacyTitle: '隐私政策',
+    termsTitle: '用户协议与免责声明',
+    aboutTitle: '关于 TTWorldMonitor',
+    copyright: '© 2026 小韩乒乓 · TTWorldMonitor',
+    lastUpdated: '最后更新：2026-08-14',
+    visitStats: '访问 {total} 次 · 今日 {today} · 会话 {sessions}',
+    footerNotice: '本站部署于境外云服务（Render），面向乒乓球爱好者提供公开信息聚合与教学参考。访问统计仅记录页面路径与匿名会话标识，不收集姓名、手机号等个人身份信息。使用本站即表示同意隐私政策与用户协议。',
+    privacyIntro: 'TTWorldMonitor（以下简称「本站」）由小韩乒乓运营。我们重视您的隐私，本政策说明我们收集哪些信息及如何使用。',
+    termsIntro: '请在使用本站前仔细阅读本协议。本站为免费信息展示与学习工具，不构成任何形式的商业承诺或竞技指导保证。',
+    aboutIntro: 'TTWorldMonitor 是乒乓球世界实时情报仪表盘，融合排名、赛事、联赛、TPI 热力图、运动力学实验室与 AI 自我进化引擎。',
+    privacy: {
+      collect: {
+        title: '我们收集什么',
+        body: '（1）访问统计：页面路径、匿名会话 ID（浏览器 sessionStorage 生成）、访问时间；（2）技术日志：服务器运行日志（不含个人身份）；（3）运动实验室偏好：若您使用该功能，技术动作偏好可能保存在浏览器本地及云端进化状态中。',
+      },
+      use: {
+        title: '我们如何使用',
+        body: '访问数据仅用于统计网站使用量、改进产品体验及公开展示累计访问次数。我们不会出售您的数据，也不会用于定向广告。',
+      },
+      storage: {
+        title: '数据存储',
+        body: '数据存储于 Render 境外服务器（美国等地区）。免费套餐下部分统计数据可能在服务重启后重置。浏览器 localStorage/sessionStorage 中的偏好由您自行管理。',
+      },
+      third: {
+        title: '第三方服务',
+        body: '本站可能链接至 ITTF、WTT、YouTube、抖音等第三方网站或嵌入其公开内容。这些服务有各自的隐私政策，本站不对其数据处理负责。排名与赛事数据来自公开 API 或种子样本，仅供参考。',
+      },
+      rights: {
+        title: '您的权利',
+        body: '您可随时清除浏览器缓存与 localStorage 以删除本地偏好数据。若需删除云端统计关联信息，请通过关于页面联系方式与我们联系。',
+      },
+      contact: {
+        title: '联系我们',
+        body: '如有隐私相关问题，请通过小韩乒乓官方渠道联系运营者。',
+      },
+    },
+    terms: {
+      service: {
+        title: '服务说明',
+        body: '本站免费提供乒乓球情报可视化、教学参考与数据分析工具，无需注册即可使用。「AI 进化」「TPI 指数」等均为基于公开数据与第一性原理公理的模型输出，不构成官方排名或投资建议。',
+      },
+      data: {
+        title: '数据准确性',
+        body: '赛果、排名、直播状态等信息可能存在延迟或误差。种子数据模式下部分内容为演示样本。请以 ITTF/WTT 等官方来源为准。',
+      },
+      ip: {
+        title: '知识产权',
+        body: '本站界面、代码、TPI 模型与运动力学内容版权归小韩乒乓所有。运动员姓名、赛事商标归各自权利人。未经授权不得商业复制或再分发本站内容。',
+      },
+      disclaimer: {
+        title: '免责声明',
+        body: '本站内容仅供学习交流，不构成医疗、训练或竞技指导建议。因使用本站信息产生的任何损失，运营者不承担责任。外链内容不代表本站立场。',
+      },
+      liability: {
+        title: '责任限制',
+        body: '在法律允许的最大范围内，本站按「现状」提供服务，不保证服务不间断、无错误或完全安全。',
+      },
+      changes: {
+        title: '协议变更',
+        body: '我们可能更新本协议，更新后继续使用本站即视为接受。重大变更将在站内显著位置提示。',
+      },
+    },
+    aboutPage: {
+      publish: {
+        title: '合规发布说明',
+        body: '本站已通过隐私政策、用户协议公开运营信息，提供 robots.txt 与 sitemap.xml 供搜索引擎收录。部署于 Render 免费云服务，域名以 Render 分配为准，可在环境变量 TTWM_SITE_URL 配置正式地址。',
+      },
+      data: {
+        title: '数据来源',
+        body: 'ITTF 公开 API、WTT/联赛公开信息、教学直播公开页面及项目种子数据。热力图与 TPI 基于第一性原理模型计算，标注方法论版本。',
+      },
+      contact: {
+        title: '运营方',
+        body: '小韩乒乓 — 乒乓球教学与内容创作。本站为爱好者社区工具，非商业新闻机构。',
+      },
+      openDashboard: '打开仪表盘',
+    },
+  },
   dashboard: {
     loading: '正在加载 Bootstrap 数据...',
     seedMode: '种子数据模式',
