@@ -1,0 +1,20 @@
+{
+  "name": "ttworldmonitor-mcp",
+  "version": "0.2.0",
+  "description": "TTWorldMonitor MCP Server — 63 table tennis intelligence tools (WM pattern)",
+  "transport": { "type": "streamableHttp" },
+  "endpoint": "/mcp",
+  "tools": 63,
+  "domains": [
+    "rankings",
+    "players",
+    "tpi",
+    "tournaments",
+    "signals",
+    "streams",
+    "correlation",
+    "evolution",
+    "intelligence",
+    "config"
+  ]
+}

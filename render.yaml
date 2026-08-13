@@ -1,0 +1,19 @@
+# Render.com 免费云端部署 — https://render.com/docs/deploy-free
+# 免费套餐不支持持久磁盘，进化状态在运行期间保存在 ./data（重启后会重置，GitHub Cron 会保持活跃）
+services:
+  - type: web
+    name: ttworldmonitor
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TTWM_CLOUD
+        value: "1"
+      - key: TTWM_EVOLVE_INTERVAL_MS
+        value: "300000"
+      - key: TTWM_DATA_DIR
+        value: ./data

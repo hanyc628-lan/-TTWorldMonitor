@@ -1,0 +1,31 @@
+name: Cloud Evolution Keep-Alive
+
+on:
+  schedule:
+    # 每 5 分钟触发云端学习（保持 Render 免费实例活跃 + 进化 tick）
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health
+        run: |
+          URL="${{ secrets.TTWM_CLOUD_URL }}"
+          if [ -z "$URL" ]; then
+            echo "TTWM_CLOUD_URL secret not set — skip (configure after Render deploy)"
+            exit 0
+          fi
+          curl -sf "$URL/api/health" | head -c 500
+          echo ""
+
+      - name: Trigger evolution tick
+        run: |
+          URL="${{ secrets.TTWM_CLOUD_URL }}"
+          SECRET="${{ secrets.TTWM_CRON_SECRET }}"
+          if [ -z "$URL" ]; then exit 0; fi
+          HDR=""
+          if [ -n "$SECRET" ]; then HDR="-H X-TTWorldMonitor-Key:$SECRET"; fi
+          curl -sf -X POST $HDR "$URL/api/evolution/tick" | head -c 800
+          echo ""
