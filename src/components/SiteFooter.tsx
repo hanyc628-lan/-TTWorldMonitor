@@ -16,6 +16,8 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
   const [stats, setStats] = useState<PublicVisitStats | null>(null);
 
   useEffect(() => {
+    if (import.meta.env.DEV) return;
+
     void fetch('/api/analytics/stats')
       .then((r) => r.json())
       .then(setStats)
@@ -35,7 +37,7 @@ export function SiteFooter({ compact = false }: { compact?: boolean }) {
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <span className="text-xs">{t('legal.copyright')}</span>
-          {stats && (
+          {stats && Number.isFinite(stats.totalPageViews) && Number.isFinite(stats.todayPageViews) && Number.isFinite(stats.totalSessions) && (
             <span className="text-[10px] font-mono text-tt-accent2">
               {t('legal.visitStats', {
                 total: stats.totalPageViews.toLocaleString(),

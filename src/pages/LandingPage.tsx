@@ -1,15 +1,78 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { COUNTRY_TPI, SIGNALS, TOURNAMENTS, FEED_SOURCES, TOP_MEN, TOP_WOMEN } from '@/data/seed';
 import { enrichTPIRecords } from '@/server/tpi-scoring';
 import { useI18n } from '@/i18n';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { SiteFooter } from '@/components/SiteFooter';
+import { fetchBootstrapData } from '@/services/bootstrap';
+import type { CountryTPI, Signal, Tournament, Player } from '@/types';
 
 export function LandingPage() {
   const { t } = useI18n();
-  const topTPI = enrichTPIRecords(COUNTRY_TPI).sort((a, b) => b.score - a.score).slice(0, 5);
-  const liveTournaments = TOURNAMENTS.filter((tm) => tm.status === 'live');
-  const topSignals = SIGNALS.slice(0, 4);
+  
+  // Real-time data state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [topTPI, setTopTPI] = useState<CountryTPI[]>([]);
+  const [topSignals, setTopSignals] = useState<Signal[]>([]);
+  const [liveTournaments, setLiveTournaments] = useState<Tournament[]>([]);
+  const [topMen, setTopMen] = useState<Player[]>([]);
+  const [topWomen, setTopWomen] = useState<Player[]>([]);
+
+  // Load real-time data on mount
+  useEffect(() => {
+    async function loadData() {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchBootstrapData();
+        
+        // Extract and process real-time data with fallback to samples
+        const tpiData = (data.tpi as CountryTPI[]) || enrichTPIRecords(COUNTRY_TPI);
+        const signalsData = (data.signals as Signal[]) || SIGNALS;
+        const tournamentsData = (data.tournaments as Tournament[]) || TOURNAMENTS;
+        const rankingsData = ((data.rankings as { men?: Player[]; women?: Player[] }) ?? {
+          men: TOP_MEN,
+          women: TOP_WOMEN,
+        });
+        
+        // Process TPI data
+        setTopTPI(
+          tpiData.length > 0 
+            ? tpiData.sort((a, b) => b.score - a.score).slice(0, 5)
+            : enrichTPIRecords(COUNTRY_TPI).sort((a, b) => b.score - a.score).slice(0, 5)
+        );
+        
+        // Set signals (top 4)
+        setTopSignals(signalsData.slice(0, 4));
+        
+        // Set live tournaments
+        setLiveTournaments(tournamentsData.filter((tm) => tm.status === 'live'));
+        
+        // Separate and set rankings by gender
+        const menRankings = (rankingsData.men ?? TOP_MEN).filter((p) => p.gender === 'M' || p.gender === undefined).slice(0, 5);
+        const womenRankings = (rankingsData.women ?? TOP_WOMEN).filter((p) => p.gender === 'W' || p.gender === undefined).slice(0, 5);
+        
+        setTopMen(menRankings.length > 0 ? menRankings : TOP_MEN.slice(0, 5));
+        setTopWomen(womenRankings.length > 0 ? womenRankings : TOP_WOMEN.slice(0, 5));
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to load bootstrap data:', err);
+        // Fallback to sample data on error
+        setTopTPI(enrichTPIRecords(COUNTRY_TPI).sort((a, b) => b.score - a.score).slice(0, 5));
+        setTopSignals(SIGNALS.slice(0, 4));
+        setLiveTournaments(TOURNAMENTS.filter((tm) => tm.status === 'live'));
+        setTopMen(TOP_MEN.slice(0, 5));
+        setTopWomen(TOP_WOMEN.slice(0, 5));
+        setError('Loading real-time data failed, using cached data');
+        setLoading(false);
+      }
+    }
+    
+    loadData();
+  }, []);
 
   const statusLabel = (status: string) => {
     if (status === 'live') return t('common.live');
@@ -61,7 +124,7 @@ export function LandingPage() {
           </h1>
           <p className="text-lg text-tt-muted max-w-2xl mx-auto mb-8 animate-fade-in">{t('landing.hero.desc')}</p>
           <div className="flex items-center justify-center gap-4 animate-fade-in flex-wrap">
-            <Link to="/dashboard" className="btn-primary text-base px-6 py-3">{t('landing.hero.launch')}</Link>
+            <Link to="/" className="btn-primary text-base px-6 py-3">{t('landing.hero.launch')}</Link>
             <Link to="/live" className="text-sm text-tt-accent2 hover:underline">{t('landing.hero.liveHub')}</Link>
             <span className="text-sm text-tt-muted">{t('landing.hero.free')}</span>
           </div>
@@ -70,8 +133,8 @@ export function LandingPage() {
 
       <section className="px-6 pb-16">
         <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="panel p-4 text-center">
+          {stats.map((stat, idx) => (
+            <div key={`${stat.label}-${idx}`} className="panel p-4 text-center">
               <div className="text-2xl font-bold font-mono text-tt-accent">{stat.value}</div>
               <div className="text-xs text-tt-muted mt-1">{stat.label}</div>
             </div>
@@ -90,8 +153,8 @@ export function LandingPage() {
                 <span className="badge bg-tt-accent/10 text-tt-accent border-tt-accent/20">{t('common.realtime')}</span>
               </div>
               <ul className="p-3 space-y-2">
-                {topSignals.map((s) => (
-                  <li key={s.id} className="text-sm leading-snug">
+                {topSignals.map((s, idx) => (
+                  <li key={`${s.id ?? 'signal'}-${idx}`} className="text-sm leading-snug">
                     <span className="text-tt-muted text-xs">{s.source}</span>
                     <p className="mt-0.5">{s.title}</p>
                   </li>
@@ -102,14 +165,17 @@ export function LandingPage() {
             <div id="tpi" className="panel">
               <div className="panel-header">
                 <span className="panel-title">{t('landing.preview.tpi')}</span>
-                <span className="badge bg-tt-gold/10 text-tt-gold border-tt-gold/20">{t('common.sample')}</span>
+                <span className={`badge ${loading ? 'bg-tt-muted/10 text-tt-muted border-tt-muted/20' : 'bg-tt-green/10 text-tt-green border-tt-green/20'}`}>
+                  {loading ? '⟳ Loading' : t('common.realtime')}
+                </span>
               </div>
+              {error && <div className="px-3 pt-2 text-[10px] text-tt-red">{error}</div>}
               <ul className="p-3 space-y-1.5">
-                {topTPI.map((row) => (
-                  <li key={row.country} className="flex items-center justify-between text-sm font-mono">
+                {topTPI.map((row, idx) => (
+                  <li key={`${row.country}-${idx}`} className="flex items-center justify-between text-sm font-mono">
                     <span>{row.country}</span>
                     <span className="flex items-center gap-2">
-                      <span className="font-semibold">{row.score}</span>
+                      <span className="font-semibold">{(row.score).toFixed(1)}</span>
                       <span className={row.trend === 'up' ? 'text-tt-green' : row.trend === 'down' ? 'text-tt-red' : 'text-tt-muted'}>
                         {row.trend === 'up' ? '▲' : row.trend === 'down' ? '▼' : '─'}
                       </span>
@@ -125,7 +191,7 @@ export function LandingPage() {
                 <span className="text-xs text-tt-muted">{t('landing.preview.liveCount', { n: liveTournaments.length })}</span>
               </div>
               <ul className="p-3 space-y-2">
-                {TOURNAMENTS.slice(0, 4).map((tm) => (
+                {(liveTournaments.length > 0 ? liveTournaments : TOURNAMENTS).slice(0, 4).map((tm) => (
                   <li key={tm.id} className="text-sm">
                     <div className="flex items-center justify-between">
                       <span className="truncate">{tm.name}</span>
@@ -148,15 +214,15 @@ export function LandingPage() {
               </div>
               <div className="p-3">
                 <div className="text-[10px] text-tt-muted uppercase mb-1">{t('landing.preview.men')}</div>
-                {TOP_MEN.slice(0, 5).map((p) => (
-                  <div key={p.id} className="flex items-center justify-between text-sm py-0.5 font-mono">
+                {topMen.map((p, idx) => (
+                  <div key={`${p.id ?? 'men'}-${idx}`} className="flex items-center justify-between text-sm py-0.5 font-mono">
                     <span><span className="text-tt-muted w-4 inline-block">#{p.rank}</span> {p.name}</span>
                     <span className="text-xs text-tt-muted">{p.country}</span>
                   </div>
                 ))}
                 <div className="text-[10px] text-tt-muted uppercase mt-3 mb-1">{t('landing.preview.women')}</div>
-                {TOP_WOMEN.slice(0, 5).map((p) => (
-                  <div key={p.id} className="flex items-center justify-between text-sm py-0.5 font-mono">
+                {topWomen.map((p, idx) => (
+                  <div key={`${p.id ?? 'women'}-${idx}`} className="flex items-center justify-between text-sm py-0.5 font-mono">
                     <span><span className="text-tt-muted w-4 inline-block">#{p.rank}</span> {p.name}</span>
                     <span className="text-xs text-tt-muted">{p.country}</span>
                   </div>
@@ -172,8 +238,8 @@ export function LandingPage() {
           <h2 className="text-2xl font-bold mb-4">{t('landing.correlation.heading')}</h2>
           <p className="text-tt-muted mb-10 max-w-2xl mx-auto">{t('landing.correlation.desc')}</p>
           <div className="grid md:grid-cols-3 gap-4 text-left">
-            {correlationCards.map((item) => (
-              <div key={item.title} className="panel p-4">
+            {correlationCards.map((item, idx) => (
+              <div key={`${item.title}-${idx}`} className="panel p-4">
                 <h3 className="font-semibold text-sm mb-2 text-tt-accent2">{item.title}</h3>
                 <p className="text-sm text-tt-muted leading-relaxed">{item.desc}</p>
               </div>
@@ -188,8 +254,8 @@ export function LandingPage() {
             {t('landing.sources', { n: FEED_SOURCES.reduce((a, s) => a + s.count, 0) })}
           </h2>
           <div className="flex flex-wrap justify-center gap-2">
-            {FEED_SOURCES.map((s) => (
-              <span key={s.name} className="badge bg-tt-surface text-tt-muted border-tt-border px-3 py-1">
+            {FEED_SOURCES.map((s, idx) => (
+              <span key={`${s.name}-${idx}`} className="badge bg-tt-surface text-tt-muted border-tt-border px-3 py-1">
                 {s.name} <span className="text-tt-accent ml-1">{s.count}</span>
               </span>
             ))}

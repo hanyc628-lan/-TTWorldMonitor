@@ -61,7 +61,8 @@ export function DashboardPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      <header className="h-11 border-b border-tt-border bg-tt-surface flex items-center px-3 gap-3 shrink-0">
+      {/* Header - responsive */}
+      <header className="h-11 sm:h-12 border-b border-tt-border bg-tt-surface flex items-center px-2 sm:px-3 gap-2 sm:gap-3 shrink-0 overflow-x-auto">
         <Link to="/" className="flex items-center gap-1.5 shrink-0">
           <div className="w-6 h-6 rounded bg-tt-accent/20 flex items-center justify-center">
             <span className="text-tt-accent text-[10px] font-bold">TT</span>
@@ -69,55 +70,63 @@ export function DashboardPage() {
           <span className="font-semibold text-sm hidden sm:inline">TTWorldMonitor</span>
         </Link>
 
-        <div className="h-4 w-px bg-tt-border" />
-        <LensSelector />
-        <div className="flex-1" />
+        <div className="h-4 w-px bg-tt-border hidden sm:block" />
+        <div className="hidden sm:block">
+          <LensSelector />
+        </div>
+        <div className="flex-1 hidden sm:block" />
 
         {bootError && (
           <span className="text-[10px] text-tt-gold font-mono">{t('dashboard.seedMode')}</span>
         )}
 
-        <span className="text-[10px] font-mono text-tt-muted hidden md:inline">
+        <span className="text-[10px] font-mono text-tt-muted hidden lg:inline">
           {t(`variants.name.${variant}`)} · {t(`variants.${variant}`)}
         </span>
 
-        <Link to="/live" className="btn-ghost text-xs text-tt-accent hidden sm:inline">
-          {t('dashboard.liveHub')}
+        <Link to="/live" className="btn-ghost text-xs text-tt-accent px-2 py-1.5 whitespace-nowrap">
+          📡
         </Link>
 
-        <Link to="/motion-lab" className="btn-ghost text-xs text-tt-accent2 hidden sm:inline">
-          {t('dashboard.motionLab')}
+        <Link to="/motion-lab" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden xs:inline">
+          🎬
         </Link>
 
-        <Link to="/evolution" className="btn-ghost text-xs text-tt-accent2 hidden md:inline">
-          {t('dashboard.evolution')}
+        <Link to="/evolution" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden md:inline">
+          🧬
         </Link>
 
         <LanguageSwitcher />
 
-        <button onClick={toggleSidebar} className="btn-ghost text-xs">
+        <button onClick={toggleSidebar} className="btn-ghost text-xs px-2 py-1.5">
           {sidebarCollapsed ? '◧' : '◨'}
         </button>
 
         <button
           onClick={() => useAppStore.getState().setSearchOpen(true)}
-          className="btn-ghost text-xs font-mono hidden sm:flex items-center gap-1"
+          className="btn-ghost text-xs font-mono px-2 py-1.5 hidden sm:flex items-center gap-1"
         >
           <span>⌘K</span>
-          <span className="text-tt-muted">{t('dashboard.command')}</span>
         </button>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <span className="w-2 h-2 rounded-full bg-tt-green animate-pulse-slow" />
-          <span className="text-[10px] text-tt-green font-mono">{t('common.live')}</span>
+          <span className="text-[10px] text-tt-green font-mono hidden xs:inline">{t('common.live')}</span>
         </div>
       </header>
 
       <BreakingNewsBanner />
 
-      <div className="flex-1 flex overflow-hidden">
+      {/* Mobile lens selector */}
+      <div className="block sm:hidden border-b border-tt-border bg-tt-surface px-2 py-1.5">
+        <LensSelector />
+      </div>
+
+      {/* Main content - mobile optimized stacking */}
+      <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
+        {/* Left sidebar - hide on mobile */}
         {!sidebarCollapsed && (
-          <aside className="w-72 border-r border-tt-border overflow-y-auto shrink-0 hidden lg:block">
+          <aside className="hidden lg:flex lg:w-72 border-r border-tt-border overflow-y-auto shrink-0 flex-col">
             <div className="p-2 space-y-2">
               {leftPanels.map((p) => (
                 <div key={p.id}>{panelComponents[p.id]}</div>
@@ -126,13 +135,15 @@ export function DashboardPage() {
           </aside>
         )}
 
-        <main className="flex-1 relative">
+        {/* Main map area */}
+        <main className="flex-1 relative min-h-0">
           <WorldMap />
           <LayerControls />
         </main>
 
+        {/* Right sidebar - hide on mobile/tablet */}
         {!sidebarCollapsed && (
-          <aside className="w-72 border-l border-tt-border overflow-y-auto shrink-0 hidden md:block">
+          <aside className="hidden md:flex md:w-72 border-l border-tt-border overflow-y-auto shrink-0 flex-col">
             <div className="p-2 space-y-2">
               {rightPanels.map((p) => (
                 <div key={p.id}>{panelComponents[p.id]}</div>
@@ -142,10 +153,13 @@ export function DashboardPage() {
         )}
       </div>
 
-      <div className="lg:hidden border-t border-tt-border max-h-48 overflow-y-auto">
-        <div className="p-2 grid grid-cols-2 gap-2">
-          <TPIPanel compact />
-          <SignalsPanel compact />
+      {/* Mobile bottom panels - compact stacking */}
+      <div className="sm:hidden border-t border-tt-border max-h-[35vh] overflow-y-auto bg-tt-surface">
+        <div className="p-1.5 space-y-1.5">
+          <div className="text-[10px] font-semibold uppercase tracking-wider text-tt-muted px-2 py-1">{t('dashboard.quickMetrics')}</div>
+          <div className="px-2 py-1">
+            <SignalsPanel />
+          </div>
         </div>
       </div>
 

@@ -9,6 +9,18 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          state: ['zustand'],
+          data: ['hls.js', 'jmespath', 'clsx'],
+        },
+      },
+    },
+  },
   server: {
     port: 3000,
     proxy: {

@@ -60,6 +60,39 @@ export function HlsVideoPlayer({ manifestUrl, className = '', poster, onError }:
     setNeedsClick(false);
   };
 
+  const toggleFullscreen = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (video.requestFullscreen) {
+        await video.requestFullscreen();
+      }
+    } catch {
+      // Ignore browser fullscreen errors for embedded streams.
+    }
+  };
+
+  const togglePictureInPicture = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      if (document.pictureInPictureElement === video) {
+        await document.exitPictureInPicture();
+        return;
+      }
+
+      if ('pictureInPictureEnabled' in document && document.pictureInPictureEnabled && video.requestPictureInPicture) {
+        await video.requestPictureInPicture();
+      }
+    } catch {
+      // Ignore unsupported or blocked PiP requests.
+    }
+  };
+
   return (
     <div className={`relative w-full h-full bg-black ${className}`}>
       <video
@@ -67,9 +100,31 @@ export function HlsVideoPlayer({ manifestUrl, className = '', poster, onError }:
         className="w-full h-full object-contain"
         controls
         playsInline
-        poster={poster}
+        autoPlay
         muted
+        poster={poster}
+        disablePictureInPicture={false}
       />
+
+      <div className="absolute right-1 sm:right-2 bottom-1 sm:bottom-2 z-10 flex gap-1 sm:gap-2 pointer-events-auto">
+        <button
+          type="button"
+          onClick={togglePictureInPicture}
+          className="rounded bg-black/65 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-medium text-white border border-white/15 hover:bg-black/80 transition-colors"
+          title="画中画"
+        >
+          PiP
+        </button>
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          className="rounded bg-black/65 px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-medium text-white border border-white/15 hover:bg-black/80 transition-colors"
+          title="全屏"
+        >
+          ⤢
+        </button>
+      </div>
+
       {needsClick && (
         <button
           type="button"

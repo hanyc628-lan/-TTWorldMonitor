@@ -11,7 +11,13 @@ export function EmbedStreamPage() {
     if (streamId) setId(streamId);
   }, [streamId]);
 
-  if (!id) return null;
+  if (!id) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center text-xs text-tt-muted">
+        Missing stream id
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black p-0">

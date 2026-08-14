@@ -30,7 +30,6 @@ import { getVariantConfig } from '@/config/variants';
 import { layersToSet, normalizeExclusiveChoropleths, setFromLayers } from '@/config/map-layer-definitions';
 import { parseUrlState, parseLayersFromUrl, syncUrlState, loadPersistedLayers, persistLayers } from '@/utils/url-state';
 import { CorrelationEngine } from '@/services/correlation-engine/engine';
-import { registerAllAdapters } from '@/services/correlation-engine/adapters';
 import { analyzeSignals } from '@/services/analysis-core';
 import { fetchBootstrapData } from '@/services/bootstrap';
 import { processSignalsForAlerts } from '@/services/breaking-alerts';
@@ -177,6 +176,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   boot: async () => {
     try {
       const engine = new CorrelationEngine();
+      const { registerAllAdapters } = await import('@/services/correlation-engine/adapters');
       registerAllAdapters(engine);
 
       let data: Record<string, unknown> = {};

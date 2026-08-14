@@ -42,6 +42,7 @@ export interface Country {
 export interface Player {
   id: string;
   name: string;
+  nameZh?: string;
   country: string;
   gender: 'M' | 'W';
   rank: number;
@@ -49,6 +50,7 @@ export interface Player {
   points: number;
   age?: number;
   style?: string;
+  ageGroup?: 'u18' | 'u23' | 'senior' | 'veteran';
 }
 
 /** TPI v2 支柱 — 从第一性原理不可约维度推导 */
@@ -93,7 +95,7 @@ export interface Signal {
 export interface Tournament {
   id: string;
   name: string;
-  tier: 'olympic' | 'worlds' | 'grand-smash' | 'champions' | 'star-contender' | 'contender' | 'youth' | 'league' | 'veteran';
+  tier: 'olympic' | 'olympics' | 'worlds' | 'grand-smash' | 'champions' | 'star-contender' | 'contender' | 'youth' | 'youth-worlds' | 'youth-regional' | 'professional-league' | 'international-league' | 'continental-games' | 'continental-cup' | 'continental-championship' | 'league' | 'veteran' | 'regional-amateur' | 'regional-league' | 'club-league' | 'student-league' | 'school-league' | 'senior-league' | 'community-open';
   location: string;
   country: string;
   lat: number;
@@ -278,6 +280,10 @@ export interface Club {
   leagueId: string;
   city: string;
   country: string;
+  province?: string;
+  county?: string;
+  district?: string;
+  level?: 'county' | 'district' | 'city' | 'regional' | 'national';
   lat: number;
   lng: number;
   notablePlayers?: string[];

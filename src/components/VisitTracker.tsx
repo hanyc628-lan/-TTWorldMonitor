@@ -22,6 +22,8 @@ export function VisitTracker() {
   const lastPath = useRef('');
 
   useEffect(() => {
+    if (import.meta.env.DEV) return;
+
     const path = location.pathname;
     if (path === lastPath.current) return;
     lastPath.current = path;

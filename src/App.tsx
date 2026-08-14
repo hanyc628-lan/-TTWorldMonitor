@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { LandingPage } from '@/pages/LandingPage';
 import { DashboardPage } from '@/pages/DashboardPage';
+import { CategoryDetailPage } from '@/pages/CategoryDetailPage';
 import { LiveHubPage } from '@/pages/LiveHubPage';
 import { EmbedStreamPage } from '@/pages/EmbedStreamPage';
 import { MotionLabPage } from '@/pages/MotionLabPage';
@@ -13,15 +14,17 @@ export default function App() {
     <>
       <VisitTracker />
       <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/live" element={<LiveHubPage />} />
-      <Route path="/motion-lab" element={<MotionLabPage />} />
-      <Route path="/evolution" element={<EvolutionPage />} />
-      <Route path="/privacy" element={<PrivacyPage />} />
-      <Route path="/terms" element={<TermsPage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/embed/:streamId" element={<EmbedStreamPage />} />
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/category/:slug" element={<CategoryDetailPage />} />
+        <Route path="/live" element={<LiveHubPage />} />
+        <Route path="/motion-lab" element={<MotionLabPage />} />
+        <Route path="/evolution" element={<EvolutionPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/embed/:streamId" element={<EmbedStreamPage />} />
       </Routes>
     </>
   );
