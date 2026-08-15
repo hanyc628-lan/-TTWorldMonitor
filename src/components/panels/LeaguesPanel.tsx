@@ -63,6 +63,7 @@ export function LeaguesPanel() {
     <Panel
       id="leagues"
       title={t('panels.leagues.title')}
+      headerRight={<span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>}
       badge={
         <span className="badge bg-tt-green/20 text-tt-green border-tt-green/30 text-[9px]">
           WTT · ITTF · {t('panels.leagues.pingchaoBadge')}

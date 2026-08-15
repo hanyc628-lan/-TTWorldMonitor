@@ -74,6 +74,7 @@ interface AppState {
   // Data
   tpiData: CountryTPI[];
   signals: Signal[];
+  signalsMeta: { live: boolean; fetchedAt: string };
   tournaments: Tournament[];
   liveMatches: LiveMatch[];
   rankingMovers: RankingMover[];
@@ -151,6 +152,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   tpiData: enrichTPIRecords(SEED_TPI),
   signals: SEED_SIGNALS,
+  signalsMeta: { live: false, fetchedAt: '' },
   tournaments: SEED_TOURNAMENTS,
   liveMatches: SEED_LIVE,
   rankingMovers: SEED_MOVERS,
@@ -195,6 +197,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         correlationEngine: engine,
         tpiData: (data.tpi as CountryTPI[]) ?? enrichTPIRecords(SEED_TPI),
         signals: (data.signals as Signal[]) ?? SEED_SIGNALS,
+        signalsMeta: (data.signalsMeta as { live: boolean; fetchedAt: string }) ?? { live: false, fetchedAt: '' },
         tournaments: (data.tournaments as Tournament[]) ?? SEED_TOURNAMENTS,
         liveMatches: (data.liveMatches as LiveMatch[]) ?? SEED_LIVE,
         rankingMovers: (data.rankingMovers as RankingMover[]) ?? SEED_MOVERS,
@@ -272,6 +275,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       set({
         tpiData: (data.tpi as CountryTPI[]) ?? get().tpiData,
         signals: (data.signals as Signal[]) ?? get().signals,
+        signalsMeta: (data.signalsMeta as { live: boolean; fetchedAt: string }) ?? get().signalsMeta,
         liveMatches: (data.liveMatches as LiveMatch[]) ?? get().liveMatches,
       });
       await get().runCorrelationEngine();

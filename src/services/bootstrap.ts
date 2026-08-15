@@ -2,13 +2,16 @@ import type { BootstrapTier } from '@/types';
 
 /** Bootstrap tier membership — mirrors World Monitor CONCEPTS.md */
 export const BOOTSTRAP_TIERS: BootstrapTier = {
-  fast: ['tpi', 'signals', 'liveMatches', 'streamStatuses'],
+  fast: ['tpi', 'signals', 'signalsMeta', 'liveMatches', 'streamStatuses'],
   slow: ['rankings', 'tournaments', 'rankingMovers', 'correlations', 'leagues', 'clubs', 'clubFixtures', 'leagueStats', 'grassrootsEvents', 'participationStats'],
   onDemand: ['countryBrief', 'playerProfile', 'h2h', 'upsets', 'equipmentTrends', 'apparelItems', 'learningModules', 'youthRankings'],
 };
 
 const TIER_CACHE_PREFIX = 'ttwm:bootstrap:tier:';
-const TIER_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+const TIER_MAX_AGE_MS: Record<'fast' | 'slow', number> = {
+  fast: 5 * 60 * 1000,
+  slow: 24 * 60 * 60 * 1000,
+};
 
 type HydratedData = Record<string, unknown>;
 
@@ -27,7 +30,7 @@ function loadTierCache(tier: 'fast' | 'slow'): HydratedData | null {
     const raw = localStorage.getItem(`${TIER_CACHE_PREFIX}${tier}`);
     if (!raw) return null;
     const { data, timestamp } = JSON.parse(raw) as { data: HydratedData; timestamp: number };
-    if (Date.now() - timestamp > TIER_MAX_AGE_MS) return null;
+    if (Date.now() - timestamp > TIER_MAX_AGE_MS[tier]) return null;
     return data;
   } catch {
     return null;

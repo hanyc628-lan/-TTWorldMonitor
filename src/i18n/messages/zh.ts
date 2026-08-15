@@ -17,6 +17,8 @@ export const zh = {
     finished: '已结束',
     sample: '样本',
     realtime: '实时',
+    liveNews: '实时新闻',
+    sampleTag: '样本数据',
   },
   landing: {
     nav: { signals: '信号', tpi: 'TPI 指数', correlation: '关联引擎', dashboard: '打开仪表盘' },

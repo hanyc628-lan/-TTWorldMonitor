@@ -9,14 +9,20 @@ interface Props {
 
 export function SignalsPanel({ compact }: Props) {
   const t = useT();
-  const { signals } = useAppStore();
+  const { signals, signalsMeta } = useAppStore();
   const items = compact ? signals.slice(0, 3) : signals;
 
   return (
     <Panel
       id="signals"
       title={t('panels.signals.title')}
-      badge={<span className="badge bg-tt-accent/10 text-tt-accent border-tt-accent/20">{t('common.realtime')}</span>}
+      badge={
+        signalsMeta.live ? (
+          <span className="badge bg-tt-accent/10 text-tt-accent border-tt-accent/20">{t('common.liveNews')}</span>
+        ) : (
+          <span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>
+        )
+      }
       compact={compact}
     >
       <ul className="space-y-2">
@@ -28,7 +34,13 @@ export function SignalsPanel({ compact }: Props) {
               </span>
               <span className="text-[10px] text-tt-muted">{formatRelativeTime(s.timestamp)}</span>
             </div>
-            <p>{s.title}</p>
+            {s.url ? (
+              <a href={s.url} target="_blank" rel="noreferrer noopener" className="hover:text-tt-accent transition-colors">
+                {s.title}
+              </a>
+            ) : (
+              <p>{s.title}</p>
+            )}
             <span className="text-[10px] text-tt-muted">{s.source}</span>
           </li>
         ))}

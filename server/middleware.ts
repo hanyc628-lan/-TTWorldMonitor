@@ -33,6 +33,19 @@ import {
   updateCloudPreferences,
 } from './evolution/worker.js';
 import { getPublicStats, loadVisitStats, recordVisit, type HitPayload } from './analytics/visits.js';
+import { fetchLiveNews } from './news/rss.js';
+
+/** 实时新闻优先，样本补充；附带 live 标记供前端诚实展示来源。 */
+async function buildSignals() {
+  const live = await fetchLiveNews();
+  const samples = SIGNALS.map((s) => ({ ...s }));
+  if (live.live) {
+    const seenTitles = new Set(live.signals.map((s) => s.title));
+    const merged = [...live.signals, ...samples.filter((s) => !seenTitles.has(s.title))];
+    return { signals: merged, meta: { live: true, fetchedAt: live.fetchedAt } };
+  }
+  return { signals: samples, meta: { live: false, fetchedAt: live.fetchedAt } };
+}
 
 function sendJson(res: ServerResponse, data: unknown, status = 200, headers: Record<string, string> = {}): void {
   res.writeHead(status, { 'Content-Type': 'application/json', ...headers });
@@ -102,9 +115,12 @@ export async function handleApiRoute(
     const menRankings = await fetchWorldRankings('M', 100).catch(() => []);
     const womenRankings = await fetchWorldRankings('W', 100).catch(() => []);
 
+    const { signals: mergedSignals, meta: signalsMeta } = await buildSignals();
+
     const all: Record<string, unknown> = {
       tpi: enrichTPIRecords(COUNTRY_TPI),
-      signals: SIGNALS,
+      signals: mergedSignals,
+      signalsMeta,
       tournaments: TOURNAMENTS,
       liveMatches: LIVE_MATCHES,
       rankingMovers: RANKING_MOVERS,

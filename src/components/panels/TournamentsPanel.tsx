@@ -17,6 +17,7 @@ export function TournamentsPanel() {
     <Panel
       id="tournaments"
       title={t('panels.tournaments.title')}
+      badge={<span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>}
       headerRight={<span className="text-[10px] text-tt-muted">{t('panels.tournaments.highDisruption', { n: disrupted })}</span>}
     >
       <ul className="space-y-2">
