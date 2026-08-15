@@ -40,7 +40,7 @@ export const ja: Messages = fromEn({
   },
   dashboard: { loading: 'データ読み込み中...', liveHub: 'ライブハブ', command: 'コマンド', quickMetrics: 'クイック指標' },
   category: {
-    back: '戻る', focus: '焦点', topLeague: 'トップリーグ', region: '地域', clubs: 'クラブ', fixtures: '試合',
+    back: '戻る', focus: '焦点', topLeague: 'トップリーグ', region: '地域', clubsLabel: 'クラブ', fixtures: '試合',
     keyFocus: '注目ポイント', corePlayers: '中心選手', clubPerformance: 'クラブ戦績',
     kpis: { rankingHeat: 'ランキング熱', rankingHeatDetail: '主力が上位に定着', scheduleDensity: '試合密度', scheduleDensityDetail: '今季の強度は安定', clubStrength: 'クラブ強度', clubStrengthDetail: '主力選手の集中度が高い', high: '高', strong: '強' },
     wtt: { label: 'WTT', subtitle: '世界ツアーと選手権シリーズ', summary: '世界大会の動き、主要大会日程、ポイント勾配、重要結果の分布。', tags: '日程|ポイント|ツアー|上昇' },

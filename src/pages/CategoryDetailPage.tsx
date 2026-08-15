@@ -159,7 +159,7 @@ export function CategoryDetailPage() {
                 <span className="font-semibold">{regionCode}</span>
               </div>
               <div className="flex items-center justify-between text-[11px] sm:text-sm gap-2">
-                <span className="text-tt-muted flex-shrink-0">{t('category.clubs')}</span>
+                <span className="text-tt-muted flex-shrink-0">{t('category.clubsLabel')}</span>
                 <span className="font-semibold">{relevantClubs.length}</span>
               </div>
               <div className="flex items-center justify-between text-[11px] sm:text-sm gap-2">

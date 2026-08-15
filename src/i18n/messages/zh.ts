@@ -152,7 +152,7 @@ export const zh = {
     focus: '焦点',
     topLeague: '顶级联赛',
     region: '地区',
-    clubs: '俱乐部',
+    clubsLabel: '俱乐部',
     fixtures: '赛程',
     keyFocus: '关键焦点',
     corePlayers: '核心球员',

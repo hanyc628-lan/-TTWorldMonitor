@@ -109,7 +109,7 @@ export const en: Messages = {
     focus: 'Focus',
     topLeague: 'Top league',
     region: 'Region',
-    clubs: 'Clubs',
+    clubsLabel: 'Clubs',
     fixtures: 'Fixtures',
     keyFocus: 'Key focus',
     corePlayers: 'Core players',
