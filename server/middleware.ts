@@ -37,6 +37,9 @@ import { getPublicStats, loadVisitStats, recordVisit, type HitPayload } from './
 import { fetchLiveNews } from './news/rss.js';
 import { buildLiveRankingMovers, enrichTPIWithLivePlayers } from './realtime/derived.js';
 import { fetchParseTournaments, fetchParseEventResults } from './parsebot/client.js';
+import { fetchTLeagueData } from './leagues/tleague.js';
+import { fetchTTBLData } from './leagues/ttbl.js';
+import { fetchGrassrootsData } from './grassroots/england.js';
 
 /** 实时新闻优先，样本补充；附带 live 标记供前端诚实展示来源。 */
 async function buildSignals() {
@@ -132,6 +135,19 @@ export async function handleApiRoute(
       } catch { /* fallback below */ }
     }
 
+    // 真实联赛数据（T联赛/TTBL）+ 基层赛事（异步并行，失败回退样本）
+    const [tleague, ttbl, grassroots] = await Promise.allSettled([
+      fetchTLeagueData(),
+      fetchTTBLData(),
+      fetchGrassrootsData(),
+    ]);
+    const tleagueOk = tleague.status === 'fulfilled' && tleague.value.ok;
+    const ttblOk = ttbl.status === 'fulfilled' && ttbl.value.ok;
+    const grassrootsOk = grassroots.status === 'fulfilled' && grassroots.value.ok;
+    const tleagueData = tleagueOk ? tleague.value : null;
+    const ttblData = ttblOk ? ttbl.value : null;
+    const grassrootsData = grassrootsOk ? grassroots.value : null;
+
     const all: Record<string, unknown> = {
       tpi,
       signals: mergedSignals,
@@ -141,15 +157,15 @@ export async function handleApiRoute(
       rankingMovers: liveMovers.length ? liveMovers : RANKING_MOVERS,
       streamStatuses: simulateStreamStatuses(),
       rankings: { men: menRankings, women: womenRankings, source: 'ittf' },
-      leagues: LEAGUES,
-      clubs: CLUBS,
-      clubFixtures: CLUB_FIXTURES,
-      leagueStats: LEAGUE_STATS,
+      leagues: [...(tleagueData?.leagues ?? []), ...(ttblData?.leagues ?? []), ...LEAGUES],
+      clubs: [...(tleagueData?.clubs ?? []), ...(ttblData?.clubs ?? []), ...CLUBS],
+      clubFixtures: [...(tleagueData?.clubFixtures ?? []), ...(ttblData?.clubFixtures ?? []), ...CLUB_FIXTURES],
+      leagueStats: [...(tleagueData?.leagueStats ?? []), ...(ttblData?.leagueStats ?? []), ...LEAGUE_STATS],
       equipmentTrends: EQUIPMENT_TRENDS,
       apparelItems: APPAREL_ITEMS,
       learningModules: LEARNING_MODULES,
-      participationStats: PARTICIPATION_STATS,
-      grassrootsEvents: GRASSROOTS_EVENTS,
+      participationStats: [...(grassrootsData?.participation ?? []), ...PARTICIPATION_STATS],
+      grassrootsEvents: [...(grassrootsData?.events ?? []), ...GRASSROOTS_EVENTS],
     };
 
     if (!keys) {
