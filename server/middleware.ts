@@ -34,6 +34,7 @@ import {
 } from './evolution/worker.js';
 import { getPublicStats, loadVisitStats, recordVisit, type HitPayload } from './analytics/visits.js';
 import { fetchLiveNews } from './news/rss.js';
+import { buildLiveRankingMovers, enrichTPIWithLivePlayers } from './realtime/derived.js';
 
 /** 实时新闻优先，样本补充；附带 live 标记供前端诚实展示来源。 */
 async function buildSignals() {
@@ -116,14 +117,16 @@ export async function handleApiRoute(
     const womenRankings = await fetchWorldRankings('W', 100).catch(() => []);
 
     const { signals: mergedSignals, meta: signalsMeta } = await buildSignals();
+    const tpi = await enrichTPIWithLivePlayers().catch(() => enrichTPIRecords(COUNTRY_TPI));
+    const liveMovers = await buildLiveRankingMovers();
 
     const all: Record<string, unknown> = {
-      tpi: enrichTPIRecords(COUNTRY_TPI),
+      tpi,
       signals: mergedSignals,
       signalsMeta,
       tournaments: TOURNAMENTS,
       liveMatches: LIVE_MATCHES,
-      rankingMovers: RANKING_MOVERS,
+      rankingMovers: liveMovers.length ? liveMovers : RANKING_MOVERS,
       streamStatuses: simulateStreamStatuses(),
       rankings: { men: menRankings, women: womenRankings, source: 'ittf' },
       leagues: LEAGUES,
