@@ -32,6 +32,7 @@ export function DashboardPage() {
   const config = getVariantConfig(variant);
   const leftPanels = Object.values(config.panels).filter((p) => p.side === 'left');
   const rightPanels = Object.values(config.panels).filter((p) => p.side === 'right');
+  const allPanels = [...leftPanels, ...rightPanels];
 
   const panelComponents: Record<string, ReactNode> = {
     tpi: <TPIPanel />,
@@ -122,43 +123,22 @@ export function DashboardPage() {
         <LensSelector />
       </div>
 
-      {/* Main content - mobile optimized stacking */}
-      <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
-        {/* Left sidebar - hide on mobile */}
-        {!sidebarCollapsed && (
-          <aside className="hidden lg:flex lg:w-72 border-r border-tt-border overflow-y-auto shrink-0 flex-col">
-            <div className="p-2 space-y-2">
-              {leftPanels.map((p) => (
-                <div key={p.id}>{panelComponents[p.id]}</div>
-              ))}
-            </div>
-          </aside>
-        )}
+      {/* Main content - compact map card + panel grid */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="p-2 sm:p-3 space-y-3">
+          {/* Map card - compact banner, not full-screen */}
+          <div className="relative rounded-xl overflow-hidden border border-tt-border bg-[#0d1117] h-[240px] sm:h-[300px] lg:h-[340px] shrink-0">
+            <WorldMap />
+            {!sidebarCollapsed && <LayerControls />}
+          </div>
 
-        {/* Main map area */}
-        <main className="flex-1 relative min-h-0">
-          <WorldMap />
-          <LayerControls />
-        </main>
-
-        {/* Right sidebar - hide on mobile/tablet */}
-        {!sidebarCollapsed && (
-          <aside className="hidden md:flex md:w-72 border-l border-tt-border overflow-y-auto shrink-0 flex-col">
-            <div className="p-2 space-y-2">
-              {rightPanels.map((p) => (
-                <div key={p.id}>{panelComponents[p.id]}</div>
-              ))}
-            </div>
-          </aside>
-        )}
-      </div>
-
-      {/* Mobile bottom panels - compact stacking */}
-      <div className="sm:hidden border-t border-tt-border max-h-[35vh] overflow-y-auto bg-tt-surface">
-        <div className="p-1.5 space-y-1.5">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-tt-muted px-2 py-1">{t('dashboard.quickMetrics')}</div>
-          <div className="px-2 py-1">
-            <SignalsPanel />
+          {/* Panel grid - responsive density */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {allPanels.map((p) => (
+              <div key={p.id} className={p.id === 'leagues' || p.id === 'leagueData' ? 'lg:col-span-2' : ''}>
+                {panelComponents[p.id]}
+              </div>
+            ))}
           </div>
         </div>
       </div>
