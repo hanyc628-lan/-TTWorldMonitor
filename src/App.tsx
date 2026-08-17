@@ -6,6 +6,7 @@ import { LiveHubPage } from '@/pages/LiveHubPage';
 import { EmbedStreamPage } from '@/pages/EmbedStreamPage';
 import { MotionLabPage } from '@/pages/MotionLabPage';
 import { EvolutionPage } from '@/pages/EvolutionPage';
+import { AnalysisPage } from '@/pages/AnalysisPage';
 import { PrivacyPage, TermsPage, AboutPage } from '@/pages/LegalPages';
 import { VisitTracker } from '@/components/VisitTracker';
 
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/live" element={<LiveHubPage />} />
         <Route path="/motion-lab" element={<MotionLabPage />} />
         <Route path="/evolution" element={<EvolutionPage />} />
+        <Route path="/analysis" element={<AnalysisPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/about" element={<AboutPage />} />

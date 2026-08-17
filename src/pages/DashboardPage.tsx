@@ -85,8 +85,16 @@ export function DashboardPage() {
           {t(`variants.name.${variant}`)} · {t(`variants.${variant}`)}
         </span>
 
-        <Link to="/live" className="btn-ghost text-xs text-tt-accent px-2 py-1.5 whitespace-nowrap">
-          📡
+        <Link
+          to="/live"
+          className="btn-ghost flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-tt-red border border-tt-red/40 bg-tt-red/10 hover:bg-tt-red/20 rounded-full"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-tt-red animate-pulse" />
+          <span>直播 · 小韩老师</span>
+        </Link>
+
+        <Link to="/analysis" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden sm:inline">
+          🔬 情报分析
         </Link>
 
         <Link to="/motion-lab" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden xs:inline">
