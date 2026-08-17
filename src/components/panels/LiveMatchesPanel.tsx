@@ -19,7 +19,7 @@ export function LiveMatchesPanel() {
     <Panel
       id="liveMatches"
       title={t('panels.liveMatches.title')}
-      headerRight={<span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>}
+      
       badge={
         <span className="flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-tt-red animate-pulse" />

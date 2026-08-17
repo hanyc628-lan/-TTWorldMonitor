@@ -31,7 +31,7 @@ export function LeagueDataPanel() {
     <Panel
       id="leagueData"
       title={t('panels.leagueData.title')}
-      headerRight={<span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>}
+      
       badge={
         <span className="badge bg-tt-accent2/10 text-tt-accent2 border-tt-accent2/20 text-[9px]">
           {t('panels.leagueData.badge')}

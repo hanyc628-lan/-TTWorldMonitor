@@ -20,7 +20,7 @@ export const en: Messages = {
     sample: 'Sample',
     realtime: 'Live',
     liveNews: 'Live news',
-    sampleTag: 'Sample data',
+    
   },
   landing: {
     nav: { signals: 'Signals', tpi: 'TPI Index', correlation: 'Correlation', dashboard: 'Open Dashboard' },

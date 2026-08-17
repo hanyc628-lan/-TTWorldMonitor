@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { LiveMatch } from '../src/types/index.js';
 import jmespath from 'jmespath';
 import { handleMcpRequest } from './mcp/handler.js';
 import { fetchWorldRankings, fetchYouthRankings, searchPlayers, fetchPlayerProfile } from './ittf/client.js';
@@ -35,6 +36,7 @@ import {
 import { getPublicStats, loadVisitStats, recordVisit, type HitPayload } from './analytics/visits.js';
 import { fetchLiveNews } from './news/rss.js';
 import { buildLiveRankingMovers, enrichTPIWithLivePlayers } from './realtime/derived.js';
+import { fetchParseTournaments, fetchParseEventResults } from './parsebot/client.js';
 
 /** 实时新闻优先，样本补充；附带 live 标记供前端诚实展示来源。 */
 async function buildSignals() {
@@ -119,13 +121,23 @@ export async function handleApiRoute(
     const { signals: mergedSignals, meta: signalsMeta } = await buildSignals();
     const tpi = await enrichTPIWithLivePlayers().catch(() => enrichTPIRecords(COUNTRY_TPI));
     const liveMovers = await buildLiveRankingMovers();
+    const parseTournaments = await fetchParseTournaments(2026).catch(() => []);
+    let parseMatches: LiveMatch[] = [];
+    if (parseTournaments.length) {
+      try {
+        const liveEvents = parseTournaments.filter((t) => t.status === 'live').slice(0, 3);
+        parseMatches = (await Promise.all(
+          liveEvents.map((t) => fetchParseEventResults(t.id.replace('p-', '')).catch(() => [] as LiveMatch[])),
+        )).flat().slice(0, 20);
+      } catch { /* fallback below */ }
+    }
 
     const all: Record<string, unknown> = {
       tpi,
       signals: mergedSignals,
       signalsMeta,
-      tournaments: TOURNAMENTS,
-      liveMatches: LIVE_MATCHES,
+      tournaments: parseTournaments.length ? parseTournaments : TOURNAMENTS,
+      liveMatches: parseMatches.length ? parseMatches : LIVE_MATCHES,
       rankingMovers: liveMovers.length ? liveMovers : RANKING_MOVERS,
       streamStatuses: simulateStreamStatuses(),
       rankings: { men: menRankings, women: womenRankings, source: 'ittf' },

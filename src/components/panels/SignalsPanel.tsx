@@ -9,20 +9,13 @@ interface Props {
 
 export function SignalsPanel({ compact }: Props) {
   const t = useT();
-  const { signals, signalsMeta } = useAppStore();
+  const { signals } = useAppStore();
   const items = compact ? signals.slice(0, 3) : signals;
 
   return (
     <Panel
       id="signals"
       title={t('panels.signals.title')}
-      badge={
-        signalsMeta.live ? (
-          <span className="badge bg-tt-accent/10 text-tt-accent border-tt-accent/20">{t('common.liveNews')}</span>
-        ) : (
-          <span className="badge bg-tt-muted/10 text-tt-muted border-tt-muted/20">{t('common.sampleTag')}</span>
-        )
-      }
       compact={compact}
     >
       <ul className="space-y-2">
