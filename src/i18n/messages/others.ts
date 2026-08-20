@@ -25,7 +25,7 @@ function deepMerge<T extends object>(base: T, patch: DeepPartial<T>): T {
 
 export const ja: Messages = fromEn({
   lang: { label: '言語' },
-  common: { offline: 'オフライン', loading: '読み込み中...', upcoming: '予定', finished: '終了', sample: 'サンプル', realtime: 'リアルタイム' },
+  common: { offline: 'オフライン', loading: '読み込み中...', upcoming: '予定', finished: '終了', sample: '', sampleTag: '', realtime: 'リアルタイム' },
   landing: {
     nav: { signals: 'シグナル', tpi: 'TPI指数', correlation: '相関', dashboard: 'ダッシュボード' },
     hero: {
@@ -68,7 +68,7 @@ export const ja: Messages = fromEn({
 
 export const ko: Messages = fromEn({
   lang: { label: '언어' },
-  common: { offline: '오프라인', loading: '로딩 중...', upcoming: '예정', finished: '종료', sample: '샘플', realtime: '실시간' },
+  common: { offline: '오프라인', loading: '로딩 중...', upcoming: '예정', finished: '종료', sample: '', sampleTag: '', realtime: '실시간' },
   landing: {
     nav: { signals: '신호', tpi: 'TPI 지수', correlation: '상관', dashboard: '대시보드 열기' },
     hero: { tagline: '탁구 인텔리전스 · 실시간', title1: '뉴스가 되기 전에,', title2: '이미 알고 있다.', launch: '대시보드 시작', liveHub: '라이브 허브', free: '무료 · 가입 불필요' },
@@ -87,7 +87,7 @@ export const ko: Messages = fromEn({
 
 export const de: Messages = fromEn({
   lang: { label: 'Sprache' },
-  common: { offline: 'Offline', loading: 'Laden...', upcoming: 'Bevorstehend', finished: 'Beendet', sample: 'Beispiel', realtime: 'Live' },
+  common: { offline: 'Offline', loading: 'Laden...', upcoming: 'Bevorstehend', finished: 'Beendet', sample: '', sampleTag: '', realtime: 'Live' },
   landing: {
     nav: { signals: 'Signale', tpi: 'TPI-Index', correlation: 'Korrelation', dashboard: 'Dashboard öffnen' },
     hero: { tagline: 'Tischtennis-Intelligence · Live', title1: 'Bevor es Nachrichten wird,', title2: 'wusstest du es schon.', launch: 'Dashboard starten', liveHub: 'Live-Hub', free: 'Kostenlos · Keine Anmeldung' },
@@ -106,7 +106,7 @@ export const de: Messages = fromEn({
 
 export const fr: Messages = fromEn({
   lang: { label: 'Langue' },
-  common: { offline: 'Hors ligne', loading: 'Chargement...', upcoming: 'À venir', finished: 'Terminé', sample: 'Échantillon', realtime: 'Direct' },
+  common: { offline: 'Hors ligne', loading: 'Chargement...', upcoming: 'À venir', finished: 'Terminé', sample: '', sampleTag: '', realtime: 'Direct' },
   landing: {
     nav: { signals: 'Signaux', tpi: 'Indice TPI', correlation: 'Corrélation', dashboard: 'Ouvrir le tableau de bord' },
     hero: { tagline: 'Intelligence tennis de table · En direct', title1: 'Avant que ce soit l\'actualité,', title2: 'vous le saviez déjà.', launch: 'Lancer le tableau de bord', liveHub: 'Hub live', free: 'Gratuit · Sans inscription' },
@@ -125,7 +125,7 @@ export const fr: Messages = fromEn({
 
 export const es: Messages = fromEn({
   lang: { label: 'Idioma' },
-  common: { offline: 'Desconectado', loading: 'Cargando...', upcoming: 'Próximo', finished: 'Finalizado', sample: 'Muestra', realtime: 'En vivo' },
+  common: { offline: 'Desconectado', loading: 'Cargando...', upcoming: 'Próximo', finished: 'Finalizado', sample: '', sampleTag: '', realtime: 'En vivo' },
   landing: {
     nav: { signals: 'Señales', tpi: 'Índice TPI', correlation: 'Correlación', dashboard: 'Abrir panel' },
     hero: { tagline: 'Inteligencia de tenis de mesa · En vivo', title1: 'Cuando es noticia,', title2: 'ya lo sabías.', launch: 'Iniciar panel', liveHub: 'Centro en vivo', free: 'Gratis · Sin registro' },

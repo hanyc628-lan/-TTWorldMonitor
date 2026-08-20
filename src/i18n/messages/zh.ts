@@ -16,6 +16,7 @@ export const zh = {
     upcoming: '即将',
     finished: '已结束',
     sample: '',
+    sampleTag: '',
     realtime: '实时',
     liveNews: '实时新闻',
     

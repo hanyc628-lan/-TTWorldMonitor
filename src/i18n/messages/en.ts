@@ -18,6 +18,7 @@ export const en: Messages = {
     upcoming: 'Upcoming',
     finished: 'Finished',
     sample: '',
+    sampleTag: '',
     realtime: 'Live',
     liveNews: 'Live news',
     
