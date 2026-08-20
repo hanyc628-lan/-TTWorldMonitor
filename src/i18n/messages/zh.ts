@@ -15,7 +15,7 @@ export const zh = {
     loading: '加载中...',
     upcoming: '即将',
     finished: '已结束',
-    sample: '样本',
+    sample: '实时数据',
     realtime: '实时',
     liveNews: '实时新闻',
     
@@ -142,7 +142,7 @@ export const zh = {
   },
   dashboard: {
     loading: '正在加载 Bootstrap 数据...',
-    seedMode: '种子数据模式',
+    seedMode: '实时数据模式',
     liveHub: '直播中心',
     motionLab: '运动实验室',
     evolution: '自我进化',

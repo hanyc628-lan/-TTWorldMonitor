@@ -118,7 +118,7 @@ export const LEAGUES: League[] = [
   { id: 'wtt', name: 'WTT 世界乒乓球职业大联盟', country: 'SGP', region: '全球', level: 'pro', season: '2026', teams: 128, lat: 1.35, lng: 103.82 },
   { id: 'ittf', name: 'ITTF 国际乒联赛事体系', country: 'CHN', region: '全球', level: 'pro', season: '2026', teams: 200, lat: 39.9, lng: 116.4 },
   { id: 'ttbl', name: '德国乒乓球联赛 TTBL（德甲）', country: 'GER', region: '欧洲', level: 'pro', season: '2025/26', teams: 12, lat: 51.5, lng: 7.5 },
-  { id: 'pingchao', name: '中国乒超联赛', country: 'CHN', region: '亚洲', level: 'pro', season: '2025', teams: 16, lat: 39.9, lng: 116.4 },
+  { id: 'pingchao', name: '中国乒超联赛', country: 'CHN', region: '亚洲', level: 'pro', season: '2026', teams: 18, lat: 39.9, lng: 116.4 },
   { id: 't-league', name: '日本 T 联赛（T-League）', country: 'JPN', region: '亚洲', level: 'pro', season: '2025/26', teams: 10, lat: 35.7, lng: 139.7 },
   { id: 'kptl', name: '韩国 KPTL 联赛', country: 'KOR', region: '亚洲', level: 'semi-pro', season: '2025', teams: 8, lat: 37.5, lng: 127.0 },
   { id: 'pro-a', name: '法国 Pro A', country: 'FRA', region: '欧洲', level: 'pro', season: '2025/26', teams: 14, lat: 48.9, lng: 2.3 },
@@ -369,7 +369,7 @@ export const LEAGUE_STATS: LeagueStats[] = [
   },
   {
     leagueId: 'pingchao',
-    season: '2025',
+    season: '2026',
     matchesPlayed: 56,
     avgSetsPerMatch: 9.8,
     spotlight: {

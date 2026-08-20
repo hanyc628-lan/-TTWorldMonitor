@@ -10,6 +10,25 @@ import clsx from 'clsx';
 
 const GEO_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
 
+/** 亚洲视角仅显示亚太相关国家图标 */
+const ASIA_COUNTRY_CODES = new Set([
+  'CHN', 'JPN', 'KOR', 'TPE', 'HKG', 'SGP', 'IND', 'THA', 'VNM', 'MYS', 'IRN', 'AUS', 'NZL',
+]);
+/** 欧洲视角仅显示欧洲相关国家图标 */
+const EUROPE_COUNTRY_CODES = new Set([
+  'GER', 'FRA', 'SWE', 'POR', 'ESP', 'GBR', 'AUT', 'POL', 'CZE', 'ROU', 'HUN', 'ITA',
+  'NED', 'BEL', 'DEN', 'UKR', 'CRO', 'SVK', 'TUR',
+]);
+
+function isInVariantRegion(countryCode: string | undefined, variant: string): boolean {
+  if (!countryCode || variant === 'world' || variant === 'pro' || variant === 'youth' || variant === 'equipment') {
+    return true;
+  }
+  if (variant === 'asia') return ASIA_COUNTRY_CODES.has(countryCode);
+  if (variant === 'europe') return EUROPE_COUNTRY_CODES.has(countryCode);
+  return true;
+}
+
 const LEGEND_STOPS = [
   { color: '#ff4d4d', label: '80+' },
   { color: '#f5c542', label: '65+' },
@@ -28,6 +47,7 @@ export function WorldMap() {
   const {
     tpiData, mapLayers, selectCountry, selectedCountry, tournaments, streamStatuses,
     clubs, equipmentTrends, grassrootsEvents, participationStats, heatmapMetric, setHeatmapMetric,
+    variant,
   } = useAppStore();
 
   const tpiMap = Object.fromEntries(tpiData.map((row) => [row.country, row]));
@@ -48,7 +68,7 @@ export function WorldMap() {
   }
 
   const activeTournaments = showTournaments
-    ? tournaments.filter((ev) => ev.status === 'live' || ev.status === 'upcoming')
+    ? tournaments.filter((ev) => (ev.status === 'live' || ev.status === 'upcoming') && isInVariantRegion(ev.country, variant))
     : [];
 
   const metrics: HeatmapMetric[] = ['composite', ...TPI_PILLARS.map((p) => p.key)];
@@ -103,7 +123,7 @@ export function WorldMap() {
           {showFederations &&
             tpiData.map((row) => {
               const country = COUNTRY_MAP[row.country];
-              if (!country) return null;
+              if (!country || !isInVariantRegion(row.country, variant)) return null;
               return (
                 <Marker key={row.country} coordinates={[country.lng, country.lat]}>
                   <circle r={3} fill={getTPIColor(row.score)} stroke="#0a0c10" strokeWidth={1} />
@@ -144,7 +164,9 @@ export function WorldMap() {
             ))}
 
           {mapLayers.clubs &&
-            clubs.map((c) => (
+            clubs
+              .filter((c) => isInVariantRegion(c.country, variant))
+              .map((c) => (
               <Marker key={c.id} coordinates={[c.lng, c.lat]}>
                 <circle r={4} fill="#f5c542" stroke="#0a0c10" strokeWidth={1} />
               </Marker>
@@ -172,7 +194,7 @@ export function WorldMap() {
           {mapLayers.youthPipeline &&
             participationStats.map((p) => {
               const meta = COUNTRY_MAP[p.country];
-              if (!meta) return null;
+              if (!meta || !isInVariantRegion(p.country, variant)) return null;
               return (
                 <Marker key={`pop-${p.country}`} coordinates={[meta.lng, meta.lat]}>
                   <text textAnchor="middle" y={12} style={{ fontFamily: 'monospace', fontSize: '6px', fill: '#4d9fff' }}>
