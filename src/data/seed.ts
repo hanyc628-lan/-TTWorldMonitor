@@ -1,6 +1,6 @@
 import type { Player, Signal, Tournament, LiveMatch, RankingMover } from '@/types';
 import { NATION_HEAT_DATA, type RawNationHeat } from './nation-heat';
-import { getAutoTournaments } from './tournament-calendar';
+import { getAutoTournaments, getAutoLiveMatches } from './tournament-calendar';
 
 export type RawCountryTPI = RawNationHeat;
 export const COUNTRY_TPI = NATION_HEAT_DATA;
@@ -176,138 +176,8 @@ export const SIGNALS: Signal[] = [
 /** @deprecated 请优先使用 getAutoTournaments()；保留导出以兼容旧引用，内容按日期自动刷新 */
 export const TOURNAMENTS: Tournament[] = getAutoTournaments();
 
-export const LIVE_MATCHES: LiveMatch[] = [
-  {
-    id: 'lm-wtt-ms',
-    tournament: 'WTT Europe Smash · 男单半决赛',
-    player1: 'WANG Chuqin',
-    player2: 'LEBRUN Felix',
-    country1: 'CHN',
-    country2: 'FRA',
-    score: '11-9, 11-7, 9-11, 11-8, 11-6',
-    set: 5,
-    status: 'live',
-    category: 'pro',
-  },
-  {
-    id: 'lm-wtt-ws',
-    tournament: 'WTT Europe Smash · 女单半决赛',
-    player1: 'SUN Yingsha',
-    player2: 'HAYATA Hina',
-    country1: 'CHN',
-    country2: 'JPN',
-    score: '11-6, 11-8, 9-11, 11-5',
-    set: 4,
-    status: 'live',
-    category: 'pro',
-  },
-  {
-    id: 'lm6',
-    tournament: 'TTBL 德甲 · 萨尔布吕肯 vs 杜塞多夫',
-    player1: 'FAN Zhendong',
-    player2: 'QIU Dang',
-    country1: 'CHN',
-    country2: 'GER',
-    score: '11-8, 9-11, 11-6, 11-9',
-    set: 4,
-    status: 'live',
-    category: 'league',
-  },
-  {
-    id: 'lm5',
-    tournament: '乒超联赛 · 山东魏桥 vs 上海地产',
-    player1: 'WANG Chuqin',
-    player2: 'XU Xin',
-    country1: 'CHN',
-    country2: 'CHN',
-    score: '11-9, 11-7, 8-11, 11-6',
-    set: 4,
-    status: 'live',
-    category: 'league',
-  },
-  {
-    id: 'lm-tleague',
-    tournament: 'T联赛 · Kinoshita Tokyo vs 琉球',
-    player1: 'HARIMOTO Tomokazu',
-    player2: 'UDA Yoshito',
-    country1: 'JPN',
-    country2: 'JPN',
-    score: '11-9, 8-11, 11-7, 9-11, 11-8',
-    set: 5,
-    status: 'live',
-    category: 'league',
-  },
-  {
-    id: 'lm1',
-    tournament: 'WTT Europe Smash 2026',
-    player1: 'MOREGARD Truls',
-    player2: 'HARIMOTO Tomokazu',
-    country1: 'SWE',
-    country2: 'JPN',
-    score: '11-9, 8-11, 11-7, 9-11, 11-8',
-    set: 5,
-    status: 'finished',
-    upsetAlert: true,
-  },
-  {
-    id: 'lm2',
-    tournament: 'WTT Europe Smash 2026',
-    player1: 'SUN Yingsha',
-    player2: 'HAYATA Hina',
-    country1: 'CHN',
-    country2: 'JPN',
-    score: '11-6, 11-4, 11-5',
-    set: 3,
-    status: 'finished',
-  },
-  {
-    id: 'lm3',
-    tournament: 'WTT Europe Smash 2026',
-    player1: 'WANG Chuqin',
-    player2: 'LEBRUN Felix',
-    country1: 'CHN',
-    country2: 'FRA',
-    score: '11-8, 9-11, 8-6',
-    set: 3,
-    status: 'live',
-  },
-  {
-    id: 'lm4',
-    tournament: 'WTT Youth Contender',
-    player1: 'MATSUSHIMA Sora',
-    player2: 'WEN Ruibo',
-    country1: 'JPN',
-    country2: 'CHN',
-    score: '0-0',
-    set: 1,
-    status: 'scheduled',
-    category: 'youth',
-  },
-  {
-    id: 'lm7',
-    tournament: '全国 U15 锦标赛',
-    player1: 'WEN Ruibo',
-    player2: '林诗栋梯队选手',
-    country1: 'CHN',
-    country2: 'CHN',
-    score: '2-2',
-    set: 5,
-    status: 'live',
-    category: 'youth',
-  },
-  {
-    id: 'lm8',
-    tournament: '广州业余 40+',
-    player1: '陈叔',
-    player2: '王教练',
-    country1: 'CHN',
-    country2: 'CHN',
-    score: '11-9, 8-11, 11-7',
-    set: 3,
-    status: 'finished',
-    category: 'veteran',
-  },
-];
+/** 直播比分随当前焦点赛事自动切换（见 getAutoLiveMatches） */
+export const LIVE_MATCHES: LiveMatch[] = getAutoLiveMatches();
 
 export const RANKING_MOVERS: RankingMover[] = [
   { player: 'HARIMOTO Tomokazu', country: 'JPN', gender: 'M', change: 1, newRank: 2, reason: 'WTT 美国大满贯四强' },

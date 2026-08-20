@@ -10,7 +10,7 @@ import {
   LIVE_MATCHES,
   RANKING_MOVERS,
 } from '../src/data/seed.js';
-import { mergeTournamentSources, getCurrentFocusTournamentName } from '../src/data/tournament-calendar.js';
+import { mergeTournamentSources, mergeLiveMatchSources, getCurrentFocusTournamentName } from '../src/data/tournament-calendar.js';
 import {
   LEAGUES,
   CLUBS,
@@ -154,7 +154,7 @@ export async function handleApiRoute(
       signals: mergedSignals,
       signalsMeta,
       tournaments: mergeTournamentSources(parseTournaments),
-      liveMatches: parseMatches.length ? parseMatches : LIVE_MATCHES,
+      liveMatches: mergeLiveMatchSources(parseMatches),
       rankingMovers: liveMovers.length ? liveMovers : RANKING_MOVERS,
       streamStatuses: simulateStreamStatuses(),
       rankings: { men: menRankings, women: womenRankings, source: 'ittf' },

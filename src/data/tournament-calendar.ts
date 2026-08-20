@@ -4,7 +4,7 @@
  * - 优先展示进行中 → 即将开始 → 刚结束的重点赛事
  * - 无 Parse.bot 密钥时作为 bootstrap 回退源
  */
-import type { Tournament } from '@/types';
+import type { Tournament, LiveMatch } from '@/types';
 
 export interface CalendarEvent {
   id: string;
@@ -267,4 +267,188 @@ export function mergeTournamentSources(remote: Tournament[], now = Date.now()): 
     if (a.status === 'upcoming') return a.startDate.localeCompare(b.startDate);
     return b.disruptionScore - a.disruptionScore;
   });
+}
+
+
+/** 联赛类常驻对阵（不受单站大满贯窗口限制） */
+const LEAGUE_MATCH_TEMPLATES: Omit<LiveMatch, 'id'>[] = [
+  {
+    tournament: 'TTBL 德甲 · 萨尔布吕肯 vs 杜塞多夫',
+    player1: 'FAN Zhendong',
+    player2: 'QIU Dang',
+    country1: 'CHN',
+    country2: 'GER',
+    score: '11-8, 9-11, 11-6, 11-9',
+    set: 4,
+    status: 'live',
+    category: 'league',
+  },
+  {
+    tournament: '乒超联赛 · 山东魏桥 vs 上海地产',
+    player1: 'WANG Chuqin',
+    player2: 'XU Xin',
+    country1: 'CHN',
+    country2: 'CHN',
+    score: '11-9, 11-7, 8-11, 11-6',
+    set: 4,
+    status: 'live',
+    category: 'league',
+  },
+  {
+    tournament: 'T联赛 · Kinoshita Tokyo vs 琉球',
+    player1: 'HARIMOTO Tomokazu',
+    player2: 'UDA Yoshito',
+    country1: 'JPN',
+    country2: 'JPN',
+    score: '11-9, 8-11, 11-7, 9-11, 11-8',
+    set: 5,
+    status: 'live',
+    category: 'league',
+  },
+];
+
+/** 职业巡回赛对阵模板（tournament 名称运行时替换为当前焦点站） */
+const PRO_MATCH_TEMPLATES: Array<Omit<LiveMatch, 'id' | 'tournament'> & { round: string }> = [
+  {
+    round: '男单半决赛',
+    player1: 'WANG Chuqin',
+    player2: 'LEBRUN Felix',
+    country1: 'CHN',
+    country2: 'FRA',
+    score: '11-9, 11-7, 9-11, 11-8, 11-6',
+    set: 5,
+    status: 'live',
+    category: 'pro',
+  },
+  {
+    round: '女单半决赛',
+    player1: 'SUN Yingsha',
+    player2: 'HAYATA Hina',
+    country1: 'CHN',
+    country2: 'JPN',
+    score: '11-6, 11-8, 9-11, 11-5',
+    set: 4,
+    status: 'live',
+    category: 'pro',
+  },
+  {
+    round: '男单四分之一决赛',
+    player1: 'MOREGARD Truls',
+    player2: 'HARIMOTO Tomokazu',
+    country1: 'SWE',
+    country2: 'JPN',
+    score: '11-9, 8-11, 11-7, 9-11, 11-8',
+    set: 5,
+    status: 'finished',
+    upsetAlert: true,
+    category: 'pro',
+  },
+];
+
+/**
+ * 自动联动直播比分：
+ * - 有进行中的大满贯/冠军赛/世锦赛 → 生成该站焦点对阵（live）
+ * - 仅有即将开始 → 显示「即将」占位，不伪装 live
+ * - 联赛对阵在联赛窗口内保持 live
+ */
+export function getAutoLiveMatches(now = Date.now()): LiveMatch[] {
+  const focus = getCurrentFocusTournamentName(now);
+  const all = getAutoTournaments(now);
+  const liveMajor = all.find(
+    (t) => t.status === 'live' && (t.tier === 'grand-smash' || t.tier === 'champions' || t.tier === 'worlds'),
+  );
+  const liveLeague = all.find((t) => t.status === 'live' && t.tier === 'league');
+
+  const out: LiveMatch[] = [];
+
+  if (liveMajor) {
+    PRO_MATCH_TEMPLATES.forEach((m, i) => {
+      out.push({
+        id: `auto-pro-${i}`,
+        tournament: `${liveMajor.name} · ${m.round}`,
+        player1: m.player1,
+        player2: m.player2,
+        country1: m.country1,
+        country2: m.country2,
+        score: m.score,
+        set: m.set,
+        status: m.status,
+        upsetAlert: m.upsetAlert,
+        category: m.category,
+      });
+    });
+  } else {
+    // 无进行中大赛：展示下一站预告，状态 pending
+    const nextMajor = all.find(
+      (t) => t.status === 'upcoming' && (t.tier === 'grand-smash' || t.tier === 'champions' || t.tier === 'worlds'),
+    );
+    if (nextMajor) {
+      out.push({
+        id: 'auto-upcoming-focus',
+        tournament: `${nextMajor.name} · 即将开赛`,
+        player1: 'TBD',
+        player2: 'TBD',
+        country1: '—',
+        country2: '—',
+        score: '—',
+        set: 0,
+        status: 'scheduled',
+        category: 'pro',
+      });
+    }
+  }
+
+  // 联赛：乒超窗口内保留国内焦点；德甲/T联赛作常驻国际联赛信号
+  if (liveLeague || true) {
+    LEAGUE_MATCH_TEMPLATES.forEach((m, i) => {
+      const isPingchao = m.tournament.includes('乒超');
+      if (isPingchao && liveLeague && !liveLeague.name.includes('乒超')) {
+        return;
+      }
+      out.push({
+        id: `auto-league-${i}`,
+        ...m,
+        // 乒超仅在联赛 live 窗口显示为 live，否则 finished
+        status: isPingchao ? (liveLeague ? 'live' : 'finished') : m.status,
+      });
+    });
+  }
+
+  // 保证至少有几条可读内容
+  if (!out.length) {
+    out.push({
+      id: 'auto-empty',
+      tournament: focus,
+      player1: '—',
+      player2: '—',
+      country1: '—',
+      country2: '—',
+      score: '—',
+      set: 0,
+      status: 'scheduled',
+      category: 'pro',
+    });
+  }
+
+  return out;
+}
+
+/**
+ * 合并远程赛果与自动直播列表：
+ * - 远程有数据时优先远程，并校正陈旧站名
+ * - 远程为空时用自动列表
+ */
+export function mergeLiveMatchSources(remote: LiveMatch[], now = Date.now()): LiveMatch[] {
+  if (remote.length) {
+    const focus = getCurrentFocusTournamentName(now);
+    return remote.map((m) => {
+      // 将明显过期的新加坡/旧站名替换为当前焦点
+      const stale = /Singapore|新加坡|US Smash|美国大满贯/i.test(m.tournament);
+      if (stale && focus) {
+        return { ...m, tournament: m.tournament.replace(/WTT[^·]*/i, focus).replace(/·+/g, '·') };
+      }
+      return m;
+    });
+  }
+  return getAutoLiveMatches(now);
 }
