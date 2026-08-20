@@ -15,7 +15,7 @@ export const zh = {
     loading: '加载中...',
     upcoming: '即将',
     finished: '已结束',
-    sample: '实时数据',
+    sample: '',
     realtime: '实时',
     liveNews: '实时新闻',
     
@@ -34,7 +34,7 @@ export const zh = {
     stats: { layers: '地图图层', sources: '精选信源', tpiNations: '国家队 TPI', alerts: '独立告警来源' },
     preview: {
       heading: '本页接入与仪表盘相同的 API',
-      sub: 'TTWorldMonitor 全天候追踪的数百个信号中的四个样本。',
+      sub: 'TTWorldMonitor 全天候追踪全球乒乓球信号与赛事动态。',
       signals: '热门信号',
       tpi: 'TPI 强国指数',
       tournaments: '赛事枢纽',
@@ -56,7 +56,7 @@ export const zh = {
     },
     sources: '{n}+ 信源 · 每个面板均标注来源',
     cta: { title: '乒乓球世界不会等你。', desc: '你读到这里的时候，排名又变了，又一场冷门诞生了。先一步发现它——免费，无需账号。', btn: '先一步发现' },
-    footer: { inspired: 'TTWorldMonitor — 灵感来自', meta: '数据样本截至 {time} · 开源 · MIT' },
+    footer: { inspired: 'TTWorldMonitor — 灵感来自', meta: '数据更新于 {time} · 开源 · MIT' },
   },
   legal: {
     about: '关于本站',
@@ -87,7 +87,7 @@ export const zh = {
       },
       third: {
         title: '第三方服务',
-        body: '本站可能链接至 ITTF、WTT、YouTube、抖音等第三方网站或嵌入其公开内容。这些服务有各自的隐私政策，本站不对其数据处理负责。排名与赛事数据来自公开 API 或种子样本，仅供参考。',
+        body: '本站可能链接至 ITTF、WTT、YouTube、抖音等第三方网站或嵌入其公开内容。这些服务有各自的隐私政策，本站不对其数据处理负责。排名与赛事数据来自公开 API 与官方信源，仅供参考。',
       },
       rights: {
         title: '您的权利',
@@ -105,7 +105,7 @@ export const zh = {
       },
       data: {
         title: '数据准确性',
-        body: '赛果、排名、直播状态等信息可能存在延迟或误差。种子数据模式下部分内容为演示样本。请以 ITTF/WTT 等官方来源为准。',
+        body: '赛果、排名、直播状态等信息可能存在延迟或误差。信息可能存在延迟，请以 ITTF/WTT 等官方来源为准。',
       },
       ip: {
         title: '知识产权',
@@ -142,7 +142,7 @@ export const zh = {
   },
   dashboard: {
     loading: '正在加载 Bootstrap 数据...',
-    seedMode: '实时数据模式',
+    seedMode: '',
     liveHub: '直播中心',
     motionLab: '运动实验室',
     evolution: '自我进化',

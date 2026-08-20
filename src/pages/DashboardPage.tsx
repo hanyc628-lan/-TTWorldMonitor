@@ -77,9 +77,9 @@ export function DashboardPage() {
         </div>
         <div className="flex-1 hidden sm:block" />
 
-        {bootError && (
+        {bootError && t('dashboard.seedMode') ? (
           <span className="text-[10px] text-tt-gold font-mono">{t('dashboard.seedMode')}</span>
-        )}
+        ) : null}
 
         <span className="text-[10px] font-mono text-tt-muted hidden lg:inline">
           {t(`variants.name.${variant}`)} · {t(`variants.${variant}`)}

@@ -17,7 +17,7 @@ export const en: Messages = {
     loading: 'Loading...',
     upcoming: 'Upcoming',
     finished: 'Finished',
-    sample: 'Sample',
+    sample: '',
     realtime: 'Live',
     liveNews: 'Live news',
     
@@ -99,7 +99,7 @@ export const en: Messages = {
   },
   dashboard: {
     loading: 'Loading bootstrap data...',
-    seedMode: 'Seed data mode',
+    seedMode: '',
     liveHub: 'Live Hub',
     motionLab: 'Motion Lab',
     evolution: 'Evolution',

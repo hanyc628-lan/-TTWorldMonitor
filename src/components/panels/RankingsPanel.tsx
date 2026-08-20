@@ -14,13 +14,11 @@ export function RankingsPanel() {
       id="rankings"
       title={t('panels.rankings.title')}
       badge={
-        <span className={`badge text-[9px] ${
-          isLive
-            ? 'bg-tt-green/20 text-tt-green border-tt-green/30'
-            : 'bg-tt-accent2/10 text-tt-accent2 border-tt-accent2/20'
-        }`}>
-          {isLive ? t('panels.rankings.live') : t('common.sample')}
-        </span>
+        isLive ? (
+          <span className="badge text-[9px] bg-tt-green/20 text-tt-green border-tt-green/30">
+            {t('panels.rankings.live')}
+          </span>
+        ) : undefined
       }
     >
       {isLive && men.length > 0 && (

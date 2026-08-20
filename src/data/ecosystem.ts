@@ -15,10 +15,10 @@ export const WTT_SPOTLIGHT: LeagueSpotlight = {
   leagueId: 'wtt',
   player: 'WANG Chuqin / SUN Yingsha',
   playerZh: '王楚钦 / 孙颖莎',
-  club: 'WTT Singapore Smash 2026',
-  clubId: 'wtt-singapore',
+  club: 'WTT US Smash 2026',
+  clubId: 'wtt-usa',
   role: '大满贯头号种子',
-  summary: '2026 赛季 WTT 大满贯系列开幕，新加坡站男女单打头号种子领跑积分赛，王楚钦卫冕男单、孙颖莎冲击女单三连冠。',
+  summary: '2026 赛季 WTT 美国大满贯（安大略）已落幕：孙颖莎卫冕女单，松岛辉空爆冷夺男单；下一站关注横滨冠军赛与欧洲大满贯。',
   seasonStats: '男单 18 胜 2 负 · 女单 16 胜 1 负',
 };
 
@@ -131,7 +131,7 @@ export const LEAGUES: League[] = [
 ];
 
 export const CLUBS: Club[] = [
-  { id: 'wtt-singapore', name: 'WTT Singapore Smash', leagueId: 'wtt', city: 'Singapore', country: 'SGP', lat: 1.35, lng: 103.82, notablePlayers: ['WANG Chuqin', 'SUN Yingsha'] },
+  { id: 'wtt-usa', name: 'WTT US Smash', leagueId: 'wtt', city: 'Ontario', country: 'USA', lat: 34.06, lng: -117.65, notablePlayers: ['WANG Chuqin', 'SUN Yingsha', 'MATSUSHIMA Sora'] },
   { id: 'wtt-montpellier', name: 'WTT Champions Montpellier', leagueId: 'wtt', city: 'Montpellier', country: 'FRA', lat: 43.61, lng: 3.88, notablePlayers: ['LEBRUN Felix', 'HAYATA Hina'] },
   { id: 'wtt-halmstad', name: 'WTT Youth Contender', leagueId: 'wtt', city: 'Halmstad', country: 'SWE', lat: 56.67, lng: 12.86, notablePlayers: ['MATSUSHIMA Sora', 'WEN Ruibo'] },
   { id: 'ittf-houston', name: 'ITTF Worlds 2026', leagueId: 'ittf', city: 'Houston', country: 'USA', lat: 29.76, lng: -95.37, notablePlayers: ['WANG Chuqin', 'SUN Yingsha'] },

@@ -54,7 +54,7 @@ export const PLAYER_STORIES: PlayerStory[] = [
     ],
     futureVision: '冲击奥运会个人和团体双金，并建立进攻型打法的学派，影响全球乒乓球手的风格演变。',
     relatedTournaments: [
-      'WTT Singapore Smash 2026',
+      'WTT US Smash 2026',
       '中国乒超联赛',
       '国际乒联世锦赛',
       '奥运会',

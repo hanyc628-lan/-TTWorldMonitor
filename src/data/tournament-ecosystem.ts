@@ -13,7 +13,7 @@ export const PROFESSIONAL_TOURNAMENTS: Tournament[] = [
     id: 'pro-wtt-gcs',
     name: 'WTT Grand Smash',
     tier: 'grand-smash',
-    location: 'Singapore',
+    location: 'Ontario, USA',
     country: 'SGP',
     lat: 1.35,
     lng: 103.82,

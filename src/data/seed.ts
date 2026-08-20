@@ -29,7 +29,7 @@ export const SIGNALS: Signal[] = [
   {
     id: 's-wtt-ms',
     type: 'result',
-    title: 'WTT 新加坡大满贯：王楚钦 3-2 勒布伦，晋级男单决赛',
+    title: 'WTT 美国大满贯：王楚钦强势晋级，林诗栋同步过关',
     source: 'WTT',
     timestamp: new Date(Date.now() - 300000).toISOString(),
     countries: ['CHN', 'FRA'],
@@ -38,7 +38,7 @@ export const SIGNALS: Signal[] = [
   {
     id: 's-wtt-ws',
     type: 'result',
-    title: 'WTT 新加坡大满贯：孙颖莎 3-1 早田希娜，女单卫冕在望',
+    title: 'WTT 美国大满贯：孙颖莎卫冕女单冠军，王曼昱/蒯曼夺女双',
     source: 'WTT',
     timestamp: new Date(Date.now() - 420000).toISOString(),
     countries: ['CHN', 'JPN'],
@@ -175,16 +175,16 @@ export const SIGNALS: Signal[] = [
 export const TOURNAMENTS: Tournament[] = [
   {
     id: 't1',
-    name: 'WTT Singapore Smash 2026',
+    name: 'WTT US Smash 2026',
     tier: 'grand-smash',
-    location: 'Singapore',
-    country: 'SGP',
-    lat: 1.35,
-    lng: 103.82,
-    startDate: '2026-03-11',
-    endDate: '2026-03-16',
-    status: 'live',
-    disruptionScore: 85,
+    location: 'Ontario, California',
+    country: 'USA',
+    lat: 34.06,
+    lng: -117.65,
+    startDate: '2026-06-26',
+    endDate: '2026-07-05',
+    status: 'completed',
+    disruptionScore: 92,
     participants: 128,
   },
   {
@@ -304,7 +304,7 @@ export const TOURNAMENTS: Tournament[] = [
 export const LIVE_MATCHES: LiveMatch[] = [
   {
     id: 'lm-wtt-ms',
-    tournament: 'WTT Singapore Smash · 男单半决赛',
+    tournament: 'WTT Champions Yokohama · 男单半决赛',
     player1: 'WANG Chuqin',
     player2: 'LEBRUN Felix',
     country1: 'CHN',
@@ -316,7 +316,7 @@ export const LIVE_MATCHES: LiveMatch[] = [
   },
   {
     id: 'lm-wtt-ws',
-    tournament: 'WTT Singapore Smash · 女单半决赛',
+    tournament: 'WTT Champions Yokohama · 女单半决赛',
     player1: 'SUN Yingsha',
     player2: 'HAYATA Hina',
     country1: 'CHN',
@@ -364,7 +364,7 @@ export const LIVE_MATCHES: LiveMatch[] = [
   },
   {
     id: 'lm1',
-    tournament: 'WTT Singapore Smash',
+    tournament: 'WTT US Smash 2026',
     player1: 'MOREGARD Truls',
     player2: 'HARIMOTO Tomokazu',
     country1: 'SWE',
@@ -376,7 +376,7 @@ export const LIVE_MATCHES: LiveMatch[] = [
   },
   {
     id: 'lm2',
-    tournament: 'WTT Singapore Smash',
+    tournament: 'WTT US Smash 2026',
     player1: 'SUN Yingsha',
     player2: 'HAYATA Hina',
     country1: 'CHN',
@@ -387,7 +387,7 @@ export const LIVE_MATCHES: LiveMatch[] = [
   },
   {
     id: 'lm3',
-    tournament: 'WTT Singapore Smash',
+    tournament: 'WTT US Smash 2026',
     player1: 'WANG Chuqin',
     player2: 'LEBRUN Felix',
     country1: 'CHN',
@@ -435,7 +435,7 @@ export const LIVE_MATCHES: LiveMatch[] = [
 ];
 
 export const RANKING_MOVERS: RankingMover[] = [
-  { player: 'HARIMOTO Tomokazu', country: 'JPN', gender: 'M', change: 1, newRank: 2, reason: 'WTT 新加坡站亚军' },
+  { player: 'HARIMOTO Tomokazu', country: 'JPN', gender: 'M', change: 1, newRank: 2, reason: 'WTT 美国大满贯四强' },
   { player: 'MATSUSHIMA Sora', country: 'JPN', gender: 'M', change: 2, newRank: 6, reason: '青少年赛事积分' },
   { player: 'ZHU Yuling', country: 'CHN', gender: 'W', change: 2, newRank: 3, reason: '复出后连胜' },
   { player: 'HAYATA Hina', country: 'JPN', gender: 'W', change: 2, newRank: 10, reason: '半决赛表现' },
