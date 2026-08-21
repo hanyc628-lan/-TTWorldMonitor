@@ -1,5 +1,5 @@
 import type { LiveMatch, Tournament } from '../types/index.js';
-import { COUNTRIES } from '../data/countries.js';
+import { COUNTRIES } from '../../src/data/countries.js';
 import { cacheGetOrSet, cacheSet, cacheGet } from '../cache.js';
 
 /**
