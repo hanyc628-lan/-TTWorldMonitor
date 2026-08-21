@@ -1,6 +1,6 @@
 import type { CountryTPI, RankingMover } from '../types/index.js';
 import { fetchWorldRankings } from '../ittf/client.js';
-import { computeTPIScore, getTPILevel, TPI_FORMULA_VERSION } from './tpi-scoring.js';
+import { computeTPIScore, getTPILevel, TPI_FORMULA_VERSION } from '../../src/server/tpi-scoring.js';
 import { COUNTRY_TPI as TPI_RECORDS } from '../../src/data/seed.js';
 
 /**
