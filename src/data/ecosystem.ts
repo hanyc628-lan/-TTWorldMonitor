@@ -13,13 +13,13 @@ import type {
 /** WTT 职业巡回赛焦点 */
 export const WTT_SPOTLIGHT: LeagueSpotlight = {
   leagueId: 'wtt',
-  player: 'WANG Chuqin / SUN Yingsha',
-  playerZh: '王楚钦 / 孙颖莎',
-  club: 'WTT US Smash 2026',
-  clubId: 'wtt-usa',
-  role: '大满贯头号种子',
-  summary: '2026 赛季 WTT 美国大满贯（安大略）已落幕：孙颖莎卫冕女单，松岛辉空爆冷夺男单；下一站关注横滨冠军赛与欧洲大满贯。',
-  seasonStats: '男单 18 胜 2 负 · 女单 16 胜 1 负',
+  player: 'LEBRUN Felix / WANG Manyu',
+  playerZh: 'Félix Lebrun / 王曼昱',
+  club: 'WTT Europe Smash 2026',
+  clubId: 'wtt-europe',
+  role: '欧洲大满贯新科冠军',
+  summary: '2026 欧洲大满贯（马尔默）刚落幕：Félix Lebrun 4-1 击败张本智和首夺大满贯男单，王曼昱 4-2 战胜王艺迪再添女单大满贯；下一站关注中国大满贯（10月）。',
+  seasonStats: '欧洲站 · 男单/女单冠军已出',
 };
 
 /** ITTF 国际乒联系列焦点 */
@@ -54,8 +54,8 @@ export const PINGCHAO_SPOTLIGHT: LeagueSpotlight = {
   club: '山东魏桥',
   clubId: 'shandong',
   role: '乒超卫冕冠军',
-  summary: '2025 赛季山东魏桥男女队双线领跑，王楚钦、孙颖莎领衔冲击联赛三连冠，与上海地产、深圳大学形成争冠集团。',
-  seasonStats: '男队 7 胜 0 负 · 女队 6 胜 1 负',
+  summary: '2026 赛季乒超常规赛收官：山东魏桥男团12连胜锁定头名，女团四强出炉；总决赛12月广州，王楚钦、孙颖莎领衔冲击卫冕。',
+  seasonStats: '男团常规赛 12 胜 0 负 · 总决赛待赛',
 };
 
 /** 日本 T 联赛焦点：张本兄妹 @ Kinoshita Meister Tokyo */

@@ -49,12 +49,12 @@ export const CALENDAR_2026: CalendarEvent[] = [
     id: 'cal-europe-smash',
     name: 'WTT Europe Smash 2026',
     tier: 'grand-smash',
-    location: 'Sweden',
+    location: 'Malmö, Sweden',
     country: 'SWE',
-    lat: 59.33,
-    lng: 18.07,
-    startDate: '2026-08-13',
-    endDate: '2026-08-23',
+    lat: 55.61,
+    lng: 12.99,
+    startDate: '2026-08-08',
+    endDate: '2026-08-16',
     participants: 128,
   },
   {
@@ -68,6 +68,18 @@ export const CALENDAR_2026: CalendarEvent[] = [
     startDate: '2026-09-08',
     endDate: '2026-09-13',
     participants: 32,
+  },
+  {
+    id: 'cal-china-smash',
+    name: 'WTT China Smash 2026',
+    tier: 'grand-smash',
+    location: 'China',
+    country: 'CHN',
+    lat: 31.23,
+    lng: 121.47,
+    startDate: '2026-10-01',
+    endDate: '2026-10-11',
+    participants: 128,
   },
   {
     id: 'cal-wtt-contender-almaty',
@@ -284,14 +296,14 @@ const LEAGUE_MATCH_TEMPLATES: Omit<LiveMatch, 'id'>[] = [
     category: 'league',
   },
   {
-    tournament: '乒超联赛 · 山东魏桥 vs 上海地产',
+    tournament: '2026乒超 · 常规赛收官 · 山东魏桥',
     player1: 'WANG Chuqin',
-    player2: 'XU Xin',
+    player2: 'LIN Shidong',
     country1: 'CHN',
     country2: 'CHN',
-    score: '11-9, 11-7, 8-11, 11-6',
-    set: 4,
-    status: 'live',
+    score: '12胜0负 · 常规赛头名',
+    set: 0,
+    status: 'finished',
     category: 'league',
   },
   {
@@ -307,40 +319,39 @@ const LEAGUE_MATCH_TEMPLATES: Omit<LiveMatch, 'id'>[] = [
   },
 ];
 
-/** 职业巡回赛对阵模板（tournament 名称运行时替换为当前焦点站） */
+/** 职业巡回赛对阵模板（tournament 名称运行时替换为当前焦点站；有 live 大赛时使用） */
 const PRO_MATCH_TEMPLATES: Array<Omit<LiveMatch, 'id' | 'tournament'> & { round: string }> = [
   {
-    round: '男单半决赛',
-    player1: 'WANG Chuqin',
-    player2: 'LEBRUN Felix',
-    country1: 'CHN',
-    country2: 'FRA',
-    score: '11-9, 11-7, 9-11, 11-8, 11-6',
-    set: 5,
-    status: 'live',
-    category: 'pro',
-  },
-  {
-    round: '女单半决赛',
-    player1: 'SUN Yingsha',
-    player2: 'HAYATA Hina',
-    country1: 'CHN',
-    country2: 'JPN',
-    score: '11-6, 11-8, 9-11, 11-5',
-    set: 4,
-    status: 'live',
-    category: 'pro',
-  },
-  {
-    round: '男单四分之一决赛',
-    player1: 'MOREGARD Truls',
+    round: '男单决赛',
+    player1: 'LEBRUN Felix',
     player2: 'HARIMOTO Tomokazu',
-    country1: 'SWE',
+    country1: 'FRA',
     country2: 'JPN',
-    score: '11-9, 8-11, 11-7, 9-11, 11-8',
+    score: '11-5, 11-8, 5-11, 11-9, 11-9',
     set: 5,
     status: 'finished',
-    upsetAlert: true,
+    category: 'pro',
+  },
+  {
+    round: '女单决赛',
+    player1: 'WANG Manyu',
+    player2: 'WANG Yidi',
+    country1: 'CHN',
+    country2: 'CHN',
+    score: '12-10, 11-3, 9-11, 12-10, 12-10, 11-5',
+    set: 6,
+    status: 'finished',
+    category: 'pro',
+  },
+  {
+    round: '男双决赛',
+    player1: 'LEBRUN Alexis / LEBRUN Felix',
+    player2: 'TBD',
+    country1: 'FRA',
+    country2: '—',
+    score: '3-0',
+    set: 3,
+    status: 'finished',
     category: 'pro',
   },
 ];
@@ -443,7 +454,8 @@ export function mergeLiveMatchSources(remote: LiveMatch[], now = Date.now()): Li
     const focus = getCurrentFocusTournamentName(now);
     return remote.map((m) => {
       // 将明显过期的新加坡/旧站名替换为当前焦点
-      const stale = /Singapore|新加坡|US Smash|美国大满贯/i.test(m.tournament);
+      // 过期站名（新加坡/美国大满贯等）自动替换为当前焦点
+      const stale = /Singapore|新加坡|US Smash|美国大满贯|United States Smash/i.test(m.tournament);
       if (stale && focus) {
         return { ...m, tournament: m.tournament.replace(/WTT[^·]*/i, focus).replace(/·+/g, '·') };
       }
