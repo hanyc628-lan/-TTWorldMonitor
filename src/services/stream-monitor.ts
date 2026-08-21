@@ -1,43 +1,53 @@
 import type { StreamStatus, LiveStreamSource } from '@/types';
 import { STREAM_SOURCES } from '@/config/stream-sources';
 
-/** 直播信号监测 — 轮询各源在线状态 */
+/** 直播信号监测 — 优先打服务端探测接口 */
 export async function fetchStreamStatuses(): Promise<StreamStatus[]> {
   try {
-    const resp = await fetch('/api/streams/status');
+    const resp = await fetch('/api/streams/status', { cache: 'no-store' });
     if (resp.ok) return resp.json() as Promise<StreamStatus[]>;
   } catch { /* fallback below */ }
 
   return simulateStreamStatuses(STREAM_SOURCES);
 }
 
-/**
- * 本地启发式模拟（开发/离线模式）
- * 小韩老师：晚间 19:00-23:00 大概率直播
- * CCTV：大赛日全天
- */
-function simulateStreamStatuses(sources: LiveStreamSource[]): StreamStatus[] {
-  const hour = new Date().getHours();
-  const day = new Date().getDay();
+/** 北京时间分钟数 */
+function beijingMinutes(d = new Date()): number {
+  const utc = d.getTime() + d.getTimezoneOffset() * 60_000;
+  const bj = new Date(utc + 8 * 3600_000);
+  return bj.getHours() * 60 + bj.getMinutes();
+}
 
+/** 小韩老师日程：白天不定时 + 12:20 定期 */
+export function isXiaohanScheduleLive(now = new Date()): boolean {
+  const m = beijingMinutes(now);
+  // 12:10–13:05 定期窗口
+  if (m >= 12 * 60 + 10 && m < 13 * 60 + 5) return true;
+  // 白天 9:00–18:00
+  if (m >= 9 * 60 && m < 18 * 60) return true;
+  // 晚间 19:00–22:59
+  if (m >= 19 * 60 && m < 23 * 60) return true;
+  return false;
+}
+
+function simulateStreamStatuses(sources: LiveStreamSource[]): StreamStatus[] {
+  const now = new Date();
   return sources.map((src) => {
     let live = false;
     let title: string | undefined;
     let viewers: number | undefined;
 
     if (src.id === 'douyin-xiaohan') {
-      live = hour >= 19 && hour <= 23;
-      title = live ? '乒乓球技术教学 · 正手弧圈专题' : undefined;
-      viewers = live ? 1200 + Math.floor(Math.random() * 800) : undefined;
+      live = isXiaohanScheduleLive(now);
+      title = live ? '小韩老师 · 乒乓球教学（日程窗口）' : undefined;
+      viewers = live ? 900 + Math.floor(Math.random() * 600) : undefined;
     } else if (src.platform === 'cctv') {
-      live = day === 0 || day === 6 || hour >= 14;
-      title = live ? '体育频道赛事转播' : undefined;
+      live = true;
+      title = '体育频道';
     } else if (src.platform === 'youtube') {
-      live = day % 2 === 0 && hour >= 10 && hour <= 22;
+      const m = beijingMinutes(now);
+      live = m >= 10 * 60 && m <= 22 * 60;
       title = live ? 'WTT / ITTF Live' : undefined;
-      viewers = live ? 5000 + Math.floor(Math.random() * 10000) : undefined;
-    } else {
-      live = Math.random() > 0.6;
     }
 
     return {
@@ -45,7 +55,7 @@ function simulateStreamStatuses(sources: LiveStreamSource[]): StreamStatus[] {
       live,
       title,
       viewers,
-      checkedAt: new Date().toISOString(),
+      checkedAt: now.toISOString(),
     };
   });
 }

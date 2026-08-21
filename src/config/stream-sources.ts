@@ -12,7 +12,7 @@ export const STREAM_SOURCES: LiveStreamSource[] = [
     category: 'teaching',
     platform: 'douyin',
     url: 'https://live.douyin.com/57194239656',
-    schedule: '每日晚间直播（教学/技术分析）',
+    schedule: '每天白天不定时直播，中午 12:20 定期直播',
     region: '中国',
     lat: 35.86,
     lng: 104.19,

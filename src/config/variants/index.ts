@@ -20,7 +20,7 @@ export const WORLD_VARIANT: VariantConfig = {
     tpi: { id: 'tpi', title: 'TPI 强国指数', side: 'left', refreshIntervalMs: 300_000, bootstrapKeys: ['tpi'] },
     signals: { id: 'signals', title: '热门信号', side: 'left', refreshIntervalMs: 60_000, bootstrapKeys: ['signals'] },
     correlation: { id: 'correlation', title: '关联引擎', side: 'left', refreshIntervalMs: 120_000 },
-    liveStreams: { id: 'liveStreams', title: '直播信号', side: 'left', refreshIntervalMs: 60_000, bootstrapKeys: ['streamStatuses'] },
+    liveStreams: { id: 'liveStreams', title: '直播信号', side: 'left', refreshIntervalMs: 20_000, bootstrapKeys: ['streamStatuses'] },
     evolution: { id: 'evolution', title: 'AI 进化引擎', side: 'left', refreshIntervalMs: 300_000 },
     leagues: { id: 'leagues', title: '联赛俱乐部', side: 'left', refreshIntervalMs: 300_000, bootstrapKeys: ['leagues', 'clubs', 'clubFixtures', 'leagueStats'] },
     leagueData: { id: 'leagueData', title: '联赛数据中心', side: 'right', refreshIntervalMs: 300_000, bootstrapKeys: ['leagueStats'] },

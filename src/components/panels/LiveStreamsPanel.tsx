@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAppStore } from '@/store/app';
 import { useT } from '@/i18n';
 import { Panel } from './Panel';
@@ -10,6 +11,14 @@ export function LiveStreamsPanel() {
   const { streamStatuses, activeStreamId, setActiveStream } = useAppStore();
   const liveCount = streamStatuses.filter((s) => s.live).length;
   const featured = streamStatuses.find((s) => s.id === FEATURED_STREAM_ID);
+  const xiaohanLive = streamStatuses.find((s) => s.id === FEATURED_STREAM_ID)?.live;
+
+  // 探测到小韩老师在播时自动切到该路并展示播放器
+  useEffect(() => {
+    if (xiaohanLive) {
+      setActiveStream(FEATURED_STREAM_ID);
+    }
+  }, [xiaohanLive, setActiveStream]);
 
   const categoryLabel = (cat: string) => {
     const key = `panels.liveStreams.${cat}` as const;
@@ -28,10 +37,18 @@ export function LiveStreamsPanel() {
         </span>
       }
     >
-      {/* 仅在有直播时展示播放器，避免离线时大块黑屏空白 */}
+      {/* 日程说明 */}
+      <p className="text-[10px] text-tt-muted mb-2 leading-relaxed">
+        小韩老师：每天白天不定时直播，中午 12:20 定期直播 · 有信号时自动播放
+      </p>
+
+      {/* 有信号时实时播放（优先小韩老师） */}
       {liveCount > 0 && (
         <div className="mb-2">
-          <LiveStreamPlayer streamId={activeStreamId ?? FEATURED_STREAM_ID} compact />
+          <LiveStreamPlayer
+            streamId={xiaohanLive ? FEATURED_STREAM_ID : (activeStreamId ?? FEATURED_STREAM_ID)}
+            compact
+          />
           {featured?.live && featured.title && (
             <p className="text-[10px] text-tt-accent mt-1 truncate">{featured.title}</p>
           )}

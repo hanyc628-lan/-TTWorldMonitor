@@ -24,7 +24,7 @@ import {
 } from '../src/data/ecosystem.js';
 import { enrichTPIRecords } from '../src/server/tpi-scoring.js';
 import { STREAM_SOURCES } from '../src/config/stream-sources.js';
-import { simulateStreamStatuses } from './streams.js';
+import { probeStreamStatuses, simulateStreamStatuses } from './streams.js';
 import { resolveStream } from './streams/resolver.js';
 import { handleManifestRequest, handleSegmentRequest } from './streams/hls-proxy.js';
 import { TOOL_REGISTRY } from './mcp/registry/index.js';
@@ -156,7 +156,7 @@ export async function handleApiRoute(
       tournaments: mergeTournamentSources(parseTournaments),
       liveMatches: mergeLiveMatchSources(parseMatches),
       rankingMovers: liveMovers.length ? liveMovers : RANKING_MOVERS,
-      streamStatuses: simulateStreamStatuses(),
+      streamStatuses: await probeStreamStatuses().catch(() => simulateStreamStatuses()),
       rankings: { men: menRankings, women: womenRankings, source: 'ittf' },
       leagues: [...(tleagueData?.leagues ?? []), ...(ttblData?.leagues ?? []), ...LEAGUES],
       clubs: [...(tleagueData?.clubs ?? []), ...(ttblData?.clubs ?? []), ...CLUBS],
@@ -226,7 +226,8 @@ export async function handleApiRoute(
   }
 
   if (pathname === '/api/streams/status') {
-    sendJson(res, simulateStreamStatuses(), 200, { 'Cache-Control': 'no-cache' });
+    const statuses = await probeStreamStatuses().catch(() => simulateStreamStatuses());
+    sendJson(res, statuses);
     return true;
   }
 
