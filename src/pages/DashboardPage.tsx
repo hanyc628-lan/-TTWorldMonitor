@@ -24,15 +24,15 @@ import { getVariantConfig } from '@/config/variants';
 import { useI18n } from '@/i18n';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
+/** 分区布局：按信息优先级分组，避免扁平网格留白与逻辑混乱 */
+
 export function DashboardPage() {
   useAppBootstrap();
   const { t } = useI18n();
 
   const { variant, selectedCountry, sidebarCollapsed, toggleSidebar, booted, bootError } = useAppStore();
   const config = getVariantConfig(variant);
-  const leftPanels = Object.values(config.panels).filter((p) => p.side === 'left');
-  const rightPanels = Object.values(config.panels).filter((p) => p.side === 'right');
-  const allPanels = [...leftPanels, ...rightPanels];
+  const enabledIds = new Set(Object.keys(config.panels));
 
   const panelComponents: Record<string, ReactNode> = {
     tpi: <TPIPanel />,
@@ -49,6 +49,8 @@ export function DashboardPage() {
     gear: <GearPanel />,
   };
 
+  const has = (id: string) => enabledIds.has(id) && panelComponents[id];
+
   if (!booted) {
     return (
       <div className="h-screen flex items-center justify-center bg-tt-bg">
@@ -62,7 +64,7 @@ export function DashboardPage() {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      {/* Header - responsive */}
+      {/* Header */}
       <header className="h-11 sm:h-12 border-b border-tt-border bg-tt-surface flex items-center px-2 sm:px-3 gap-2 sm:gap-3 shrink-0 overflow-x-auto">
         <Link to="/" className="flex items-center gap-1.5 shrink-0">
           <div className="w-6 h-6 rounded bg-tt-accent/20 flex items-center justify-center">
@@ -126,40 +128,60 @@ export function DashboardPage() {
 
       <BreakingNewsBanner />
 
-      {/* Mobile lens selector */}
       <div className="block sm:hidden border-b border-tt-border bg-tt-surface px-2 py-1.5">
         <LensSelector />
       </div>
 
-      {/* Main content - compact map card + panel grid */}
+      {/* Main — 分区流式布局 */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="p-2 sm:p-3 space-y-3">
-          {/* Map card - compact banner, not full-screen */}
-          <div className="relative rounded-xl overflow-hidden border border-tt-border bg-[#0d1117] h-[240px] sm:h-[300px] lg:h-[340px] shrink-0">
-            <WorldMap />
-            {!sidebarCollapsed && <LayerControls />}
-          </div>
+        <div className="p-2 sm:p-3 space-y-4 max-w-[1600px] mx-auto">
+          {/* 1. 全球地图 */}
+          <section aria-label="map">
+            <div className="relative rounded-xl overflow-hidden border border-tt-border bg-[#0d1117] h-[220px] sm:h-[280px] lg:h-[320px]">
+              <WorldMap />
+              {!sidebarCollapsed && <LayerControls />}
+            </div>
+          </section>
 
-          {/* Panel grid — items-start 避免短面板被拉高产生大段空白 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 items-start">
-            {allPanels.map((p) => {
-              // 关联引擎与直播信号上下堆叠，填满媒体汇聚区域
-              if (p.id === 'correlation') {
-                return (
-                  <div key="correlation-liveStreams" className="space-y-3">
-                    {panelComponents.correlation}
-                    {panelComponents.liveStreams}
-                  </div>
-                );
-              }
-              if (p.id === 'liveStreams') return null;
-              return (
-                <div key={p.id} className={p.id === 'leagues' || p.id === 'leagueData' ? 'lg:col-span-2' : ''}>
-                  {panelComponents[p.id]}
+          {/* 2. 核心情报：TPI | 热门信号 | 关联引擎+直播信号 */}
+          {(has('tpi') || has('signals') || has('correlation')) && (
+            <section aria-label="intel" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+              {has('tpi') && <div>{panelComponents.tpi}</div>}
+              {has('signals') && <div>{panelComponents.signals}</div>}
+              {(has('correlation') || has('liveStreams')) && (
+                <div className="space-y-3 md:col-span-2 xl:col-span-1">
+                  {has('correlation') && panelComponents.correlation}
+                  {has('liveStreams') && panelComponents.liveStreams}
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </section>
+          )}
+
+          {/* 3. 实时赛况：比分 · 赛事 · 排名 */}
+          {(has('liveMatches') || has('tournaments') || has('rankings')) && (
+            <section aria-label="live" className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+              {has('liveMatches') && <div>{panelComponents.liveMatches}</div>}
+              {has('tournaments') && <div>{panelComponents.tournaments}</div>}
+              {has('rankings') && <div>{panelComponents.rankings}</div>}
+            </section>
+          )}
+
+          {/* 4. 联赛体系（宽幅） */}
+          {(has('leagues') || has('leagueData')) && (
+            <section aria-label="leagues" className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
+              {has('leagues') && <div>{panelComponents.leagues}</div>}
+              {has('leagueData') && <div>{panelComponents.leagueData}</div>}
+            </section>
+          )}
+
+          {/* 5. 扩展：进化 · 基层 · 器材 */}
+          {(has('evolution') || has('grassroots') || has('gear')) && (
+            <section aria-label="extend" className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+              {has('evolution') && <div>{panelComponents.evolution}</div>}
+              {has('grassroots') && <div>{panelComponents.grassroots}</div>}
+              {has('gear') && <div>{panelComponents.gear}</div>}
+            </section>
+          )}
         </div>
       </div>
 
