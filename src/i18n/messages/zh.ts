@@ -144,6 +144,8 @@ export const zh = {
   dashboard: {
     loading: '正在加载 Bootstrap 数据...',
     seedMode: '',
+    liveXiaohan: '直播 · 小韩老师',
+    analysis: '情报分析',
     liveHub: '直播中心',
     motionLab: '运动实验室',
     evolution: '自我进化',

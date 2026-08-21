@@ -99,6 +99,8 @@ export const en: Messages = {
     },
   },
   dashboard: {
+    liveXiaohan: 'Live · Coach Han',
+    analysis: 'Analysis',
     loading: 'Loading bootstrap data...',
     seedMode: '',
     liveHub: 'Live Hub',

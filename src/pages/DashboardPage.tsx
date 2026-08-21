@@ -90,11 +90,11 @@ export function DashboardPage() {
           className="btn-ghost flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-tt-red border border-tt-red/40 bg-tt-red/10 hover:bg-tt-red/20 rounded-full"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-tt-red animate-pulse" />
-          <span>直播 · 小韩老师</span>
+          <span>{t('dashboard.liveXiaohan')}</span>
         </Link>
 
         <Link to="/analysis" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden sm:inline">
-          🔬 情报分析
+          🔬 {t('dashboard.analysis')}
         </Link>
 
         <Link to="/motion-lab" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden xs:inline">
@@ -140,13 +140,25 @@ export function DashboardPage() {
             {!sidebarCollapsed && <LayerControls />}
           </div>
 
-          {/* Panel grid - responsive density */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {allPanels.map((p) => (
-              <div key={p.id} className={p.id === 'leagues' || p.id === 'leagueData' ? 'lg:col-span-2' : ''}>
-                {panelComponents[p.id]}
-              </div>
-            ))}
+          {/* Panel grid — items-start 避免短面板被拉高产生大段空白 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 items-start">
+            {allPanels.map((p) => {
+              // 关联引擎与直播信号上下堆叠，填满媒体汇聚区域
+              if (p.id === 'correlation') {
+                return (
+                  <div key="correlation-liveStreams" className="space-y-3">
+                    {panelComponents.correlation}
+                    {panelComponents.liveStreams}
+                  </div>
+                );
+              }
+              if (p.id === 'liveStreams') return null;
+              return (
+                <div key={p.id} className={p.id === 'leagues' || p.id === 'leagueData' ? 'lg:col-span-2' : ''}>
+                  {panelComponents[p.id]}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
