@@ -132,56 +132,38 @@ export function DashboardPage() {
         <LensSelector />
       </div>
 
-      {/* Main — 分区流式布局 */}
+      {/* Main — 地图 + 瀑布流面板（无行高拉伸空白） */}
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="p-2 sm:p-3 space-y-4 max-w-[1600px] mx-auto">
-          {/* 1. 全球地图 */}
-          <section aria-label="map">
-            <div className="relative rounded-xl overflow-hidden border border-tt-border bg-[#0d1117] h-[220px] sm:h-[280px] lg:h-[320px]">
-              <WorldMap />
-              {!sidebarCollapsed && <LayerControls />}
-            </div>
-          </section>
+        <div className="p-2 sm:p-3 space-y-3 max-w-[1600px] mx-auto">
+          {/* 全球地图 */}
+          <div className="relative rounded-xl overflow-hidden border border-tt-border bg-[#0d1117] h-[200px] sm:h-[240px] lg:h-[280px]">
+            <WorldMap />
+            {!sidebarCollapsed && <LayerControls />}
+          </div>
 
-          {/* 2. 核心情报：TPI | 热门信号 | 关联引擎+直播信号 */}
-          {(has('tpi') || has('signals') || has('correlation')) && (
-            <section aria-label="intel" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
-              {has('tpi') && <div>{panelComponents.tpi}</div>}
-              {has('signals') && <div>{panelComponents.signals}</div>}
-              {(has('correlation') || has('liveStreams')) && (
-                <div className="space-y-3 md:col-span-2 xl:col-span-1">
-                  {has('correlation') && panelComponents.correlation}
-                  {has('liveStreams') && panelComponents.liveStreams}
-                </div>
-              )}
-            </section>
-          )}
-
-          {/* 3. 实时赛况：比分 · 赛事 · 排名 */}
-          {(has('liveMatches') || has('tournaments') || has('rankings')) && (
-            <section aria-label="live" className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
-              {has('liveMatches') && <div>{panelComponents.liveMatches}</div>}
-              {has('tournaments') && <div>{panelComponents.tournaments}</div>}
-              {has('rankings') && <div>{panelComponents.rankings}</div>}
-            </section>
-          )}
-
-          {/* 4. 联赛体系（宽幅） */}
-          {(has('leagues') || has('leagueData')) && (
-            <section aria-label="leagues" className="grid grid-cols-1 lg:grid-cols-2 gap-3 items-start">
-              {has('leagues') && <div>{panelComponents.leagues}</div>}
-              {has('leagueData') && <div>{panelComponents.leagueData}</div>}
-            </section>
-          )}
-
-          {/* 5. 扩展：进化 · 基层 · 器材 */}
-          {(has('evolution') || has('grassroots') || has('gear')) && (
-            <section aria-label="extend" className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
-              {has('evolution') && <div>{panelComponents.evolution}</div>}
-              {has('grassroots') && <div>{panelComponents.grassroots}</div>}
-              {has('gear') && <div>{panelComponents.gear}</div>}
-            </section>
-          )}
+          {/*
+            瀑布流：CSS multi-column，面板按内容高度紧密堆叠，
+            不会出现 grid 行对齐造成的大块空白。
+            顺序：信号 → 关联+直播 → TPI → 比分 → 赛事 → 排名 → 联赛 → 数据 → 进化 → 基层 → 器材
+          */}
+          <div className="panel-masonry">
+            {has('signals') && <div className="panel-masonry-item">{panelComponents.signals}</div>}
+            {(has('correlation') || has('liveStreams')) && (
+              <div className="panel-masonry-item space-y-3">
+                {has('correlation') && panelComponents.correlation}
+                {has('liveStreams') && panelComponents.liveStreams}
+              </div>
+            )}
+            {has('tpi') && <div className="panel-masonry-item">{panelComponents.tpi}</div>}
+            {has('liveMatches') && <div className="panel-masonry-item">{panelComponents.liveMatches}</div>}
+            {has('tournaments') && <div className="panel-masonry-item">{panelComponents.tournaments}</div>}
+            {has('rankings') && <div className="panel-masonry-item">{panelComponents.rankings}</div>}
+            {has('leagues') && <div className="panel-masonry-item">{panelComponents.leagues}</div>}
+            {has('leagueData') && <div className="panel-masonry-item">{panelComponents.leagueData}</div>}
+            {has('evolution') && <div className="panel-masonry-item">{panelComponents.evolution}</div>}
+            {has('grassroots') && <div className="panel-masonry-item">{panelComponents.grassroots}</div>}
+            {has('gear') && <div className="panel-masonry-item">{panelComponents.gear}</div>}
+          </div>
         </div>
       </div>
 

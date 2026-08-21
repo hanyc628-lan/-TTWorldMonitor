@@ -123,3 +123,25 @@
     }
   }
 }
+
+  /* 瀑布流面板：按内容高度紧密排列，消除行对齐空白 */
+  .panel-masonry {
+    column-count: 1;
+    column-gap: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .panel-masonry { column-count: 2; }
+  }
+  @media (min-width: 1024px) {
+    .panel-masonry { column-count: 3; }
+  }
+  @media (min-width: 1280px) {
+    .panel-masonry { column-count: 4; }
+  }
+  .panel-masonry-item {
+    break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 0.75rem;
+  }
+

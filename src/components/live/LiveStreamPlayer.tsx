@@ -15,7 +15,7 @@ interface Props {
 
 type PlayState = 'loading' | 'hls' | 'youtube' | 'fallback';
 
-export function LiveStreamPlayer({ streamId, compact: _compact, hero }: Props) {
+export function LiveStreamPlayer({ streamId, compact, hero }: Props) {
   const t = useT();
   const stream = getStreamById(streamId);
   const [state, setState] = useState<PlayState>('loading');
@@ -62,7 +62,9 @@ export function LiveStreamPlayer({ streamId, compact: _compact, hero }: Props) {
   const isDouyin = stream.platform === 'douyin';
   const aspectClass = hero && isDouyin
     ? 'aspect-[9/16] max-h-[min(72vh,640px)]'
-    : 'aspect-video';
+    : compact
+      ? 'aspect-video max-h-[140px]'
+      : 'aspect-video';
 
   return (
     <div className={`relative bg-black rounded-lg overflow-hidden w-full ${aspectClass}`}>

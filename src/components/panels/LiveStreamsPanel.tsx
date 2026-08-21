@@ -28,12 +28,15 @@ export function LiveStreamsPanel() {
         </span>
       }
     >
-      <div className="mb-3">
-        <LiveStreamPlayer streamId={activeStreamId ?? FEATURED_STREAM_ID} compact />
-        {featured?.live && featured.title && (
-          <p className="text-[10px] text-tt-accent mt-1 truncate">{featured.title}</p>
-        )}
-      </div>
+      {/* 仅在有直播时展示播放器，避免离线时大块黑屏空白 */}
+      {liveCount > 0 && (
+        <div className="mb-2">
+          <LiveStreamPlayer streamId={activeStreamId ?? FEATURED_STREAM_ID} compact />
+          {featured?.live && featured.title && (
+            <p className="text-[10px] text-tt-accent mt-1 truncate">{featured.title}</p>
+          )}
+        </div>
+      )}
 
       <ul className="space-y-1.5">
         {streamStatuses
