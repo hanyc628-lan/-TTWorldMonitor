@@ -84,21 +84,6 @@ export const STREAM_SOURCES: LiveStreamSource[] = [
     free: true,
     tags: ['ITTF', '世锦赛', '世界杯'],
   },
-  {
-    id: 'pingpong-daily',
-    name: '乒超联赛信号聚合',
-    host: '腾讯体育',
-    category: 'league',
-    platform: 'embed',
-    url: 'https://sports.qq.com/pingpong/',
-    schedule: '乒超赛季',
-    region: '中国',
-    lat: 23.1,
-    lng: 113.3,
-    priority: 75,
-    free: true,
-    tags: ['乒超', '联赛', '国内'],
-  },
 ];
 
 export const FEATURED_STREAM_ID = 'douyin-xiaohan';

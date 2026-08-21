@@ -7,10 +7,10 @@ export const BOOTSTRAP_TIERS: BootstrapTier = {
   onDemand: ['countryBrief', 'playerProfile', 'h2h', 'upsets', 'equipmentTrends', 'apparelItems', 'learningModules', 'youthRankings'],
 };
 
-const TIER_CACHE_PREFIX = 'ttwm:bootstrap:tier:';
+const TIER_CACHE_PREFIX = 'ttwm:bootstrap:v2:tier:';
 const TIER_MAX_AGE_MS: Record<'fast' | 'slow', number> = {
   fast: 5 * 60 * 1000,
-  slow: 24 * 60 * 60 * 1000,
+  slow: 60 * 60 * 1000,
 };
 
 type HydratedData = Record<string, unknown>;

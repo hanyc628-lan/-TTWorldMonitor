@@ -249,6 +249,13 @@ export function getCurrentFocusTournamentName(now = Date.now()): string {
  * - 远程为空时回退本地自动日历
  */
 export function mergeTournamentSources(remote: Tournament[], now = Date.now()): Tournament[] {
+  // 校正历史写死的「乒超 2025」等陈旧站名
+  remote = remote.map((t) =>
+    t.name.includes('乒超') && t.name.includes('2025')
+      ? { ...t, name: t.name.replace('2025', '2026') }
+      : t,
+  );
+
   if (!remote.length) return getAutoTournaments(now);
 
   const normalized = remote.map((t) => {

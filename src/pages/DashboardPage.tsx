@@ -147,12 +147,12 @@ export function DashboardPage() {
             顺序：信号 → 关联+直播 → TPI → 比分 → 赛事 → 排名 → 联赛 → 数据 → 进化 → 基层 → 器材
           */}
           <div className="panel-masonry">
+            {has('liveStreams') && (
+              <div className="panel-masonry-item">{panelComponents.liveStreams}</div>
+            )}
             {has('signals') && <div className="panel-masonry-item">{panelComponents.signals}</div>}
-            {(has('correlation') || has('liveStreams')) && (
-              <div className="panel-masonry-item space-y-3">
-                {has('correlation') && panelComponents.correlation}
-                {has('liveStreams') && panelComponents.liveStreams}
-              </div>
+            {has('correlation') && (
+              <div className="panel-masonry-item">{panelComponents.correlation}</div>
             )}
             {has('tpi') && <div className="panel-masonry-item">{panelComponents.tpi}</div>}
             {has('liveMatches') && <div className="panel-masonry-item">{panelComponents.liveMatches}</div>}
