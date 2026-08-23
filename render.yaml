@@ -14,7 +14,7 @@ services:
       - key: TTWM_CLOUD
         value: "1"
       - key: TTWM_EVOLVE_INTERVAL_MS
-        value: "300000"
+        value: "900000"
       - key: TTWM_DATA_DIR
         value: ./data
       - key: TTWM_PUBLISHED_AT

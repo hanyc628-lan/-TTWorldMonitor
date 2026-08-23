@@ -11,7 +11,7 @@ export interface CloudEvolutionStatus {
   cloud: boolean;
 }
 
-const SYNC_INTERVAL_MS = 2 * 60 * 1000;
+const SYNC_INTERVAL_MS = 300_000 * 60 * 1000;
 let syncTimer: ReturnType<typeof setInterval> | null = null;
 
 export async function fetchCloudEvolutionState(): Promise<EvolutionState | null> {
