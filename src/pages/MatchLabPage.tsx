@@ -47,7 +47,7 @@ export function MatchLabPage() {
     return list;
   }, [fullPool, filter, gender]);
 
-  const [idA, setIdA] = useState('ittf-han-yichen');
+  const [idA, setIdA] = useState('ittf-115612');
   const [idB, setIdB] = useState('');
   const [bestOf, setBestOf] = useState<BestOf>(5);
   const [result, setResult] = useState<MatchSimResult | null>(null);
@@ -60,7 +60,7 @@ export function MatchLabPage() {
 
   const playerA =
     pool.find((p) => p.id === idA) ??
-    fullPool.find((p) => p.id === 'ittf-han-yichen') ??
+    fullPool.find((p) => p.id === 'ittf-115612') ??
     pool[0];
   const playerB =
     pool.find((p) => p.id === idB) ??
@@ -78,7 +78,7 @@ export function MatchLabPage() {
       const data = (await resp.json()) as { results: Array<{ ittfId: string; name: string }> };
       const hits = (data.results ?? []).map((r) => simPlayerFromSearch(r));
       // 本地兜底：HAN YIchen
-      if (/han|韩|yichen|奕辰|小韩/i.test(q)) {
+      if (/han|韩|yichen|宜宸|小韩|115612/i.test(q)) {
         for (const f of FEATURED_ITTF_PLAYERS) {
           if (!hits.some((h) => h.name.toUpperCase() === f.name.toUpperCase())) hits.unshift(f);
         }
@@ -90,9 +90,9 @@ export function MatchLabPage() {
       });
       if (hits[0]) setIdA(hits[0].id);
     } catch {
-      if (/han|韩|yichen|奕辰|小韩/i.test(q)) {
+      if (/han|韩|yichen|宜宸|小韩|115612/i.test(q)) {
         setSearchHits(FEATURED_ITTF_PLAYERS);
-        setIdA('ittf-han-yichen');
+        setIdA('ittf-115612');
       }
     } finally {
       setSearching(false);
@@ -131,7 +131,7 @@ export function MatchLabPage() {
           <h1 className="text-lg font-semibold mb-1">球员间模拟比赛</h1>
           <p className="text-[12px] text-tt-muted leading-relaxed mb-2">
             名册：ITTF 男女各前 200（bootstrap）+ ITTF 姓名检索任意收录选手 + 国内未上榜高手 +
-            历史名将。已包含 ITTF 收录女运动员 <strong className="text-tt-text">HAN YIchen（韩奕辰 / 小韩老师）</strong>。
+            历史名将。已包含 ITTF 收录女运动员 <strong className="text-tt-text">HAN YIchen（韩宜宸 / 小韩老师，ITTF #115612）</strong>。
             引擎：topspin-lab Elo 期望分。
           </p>
           <p className="text-[11px] text-tt-muted mb-3">
@@ -146,7 +146,7 @@ export function MatchLabPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && void runSearch()}
-              placeholder="搜索 ITTF 选手，如 HAN YIchen / 王楚钦"
+              placeholder="搜索 ITTF 选手，如 HAN YIchen / 115612 / 王楚钦"
               className="flex-1 min-w-[12rem] bg-tt-surface border border-tt-border rounded px-2 py-2 text-sm"
             />
             <button

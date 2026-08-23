@@ -339,9 +339,9 @@ export function buildActiveFromIttf(
 /** 始终并入模拟池的 ITTF 收录选手（可能不在当周前 200） */
 export const FEATURED_ITTF_PLAYERS: SimPlayer[] = [
   {
-    id: 'ittf-han-yichen',
+    id: 'ittf-115612',
     name: 'HAN YIchen',
-    nameZh: '韩奕辰（小韩老师）',
+    nameZh: '韩宜宸（小韩老师）',
     country: 'CHN',
     gender: 'W',
     rank: 0,
@@ -350,7 +350,7 @@ export const FEATURED_ITTF_PLAYERS: SimPlayer[] = [
     style: '教学/技术讲解',
     tier: 'active',
     era: 'ITTF 收录',
-    note: 'ITTF 官网收录女运动员；小韩老师教学直播',
+    note: 'ITTF ID #115612；官网收录女运动员；小韩老师教学直播',
     eloOverride: 1850,
   },
 ];
