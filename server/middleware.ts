@@ -119,8 +119,8 @@ export async function handleApiRoute(
   // Bootstrap
   if (pathname === '/api/bootstrap') {
     const keys = searchParams.get('keys')?.split(',').filter(Boolean);
-    const menRankings = await fetchWorldRankings('M', 100).catch(() => []);
-    const womenRankings = await fetchWorldRankings('W', 100).catch(() => []);
+    const menRankings = await fetchWorldRankings('M', 200).catch(() => []);
+    const womenRankings = await fetchWorldRankings('W', 200).catch(() => []);
 
     const { signals: mergedSignals, meta: signalsMeta } = await buildSignals();
     const tpi = await enrichTPIWithLivePlayers().catch(() => enrichTPIRecords(COUNTRY_TPI));

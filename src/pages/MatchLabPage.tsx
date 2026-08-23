@@ -4,7 +4,10 @@ import { TOP_MEN, TOP_WOMEN } from '@/data/seed';
 import {
   DOMESTIC_ELITE,
   LEGENDS,
+  FEATURED_ITTF_PLAYERS,
   buildActiveFromIttf,
+  mergeSimRoster,
+  simPlayerFromSearch,
   type SimPlayer,
   type SimTier,
 } from '@/data/sim-roster';
@@ -20,16 +23,19 @@ export function MatchLabPage() {
     if (ittf?.men?.length || ittf?.women?.length) {
       return buildActiveFromIttf(ittf.men ?? [], ittf.women ?? []);
     }
-    // 无 API 时用种子前排兜底
     return buildActiveFromIttf(
       TOP_MEN.map((p) => ({ name: p.name, country: p.country, rank: p.rank, points: p.points })),
       TOP_WOMEN.map((p) => ({ name: p.name, country: p.country, rank: p.rank, points: p.points })),
     );
   }, [ittf]);
 
+  const [searchHits, setSearchHits] = useState<SimPlayer[]>([]);
+  const [query, setQuery] = useState('');
+  const [searching, setSearching] = useState(false);
+
   const fullPool = useMemo(
-    () => [...activePool, ...DOMESTIC_ELITE, ...LEGENDS],
-    [activePool],
+    () => mergeSimRoster([...activePool, ...searchHits]),
+    [activePool, searchHits],
   );
 
   const [filter, setFilter] = useState<PoolFilter>('all');
@@ -41,7 +47,7 @@ export function MatchLabPage() {
     return list;
   }, [fullPool, filter, gender]);
 
-  const [idA, setIdA] = useState('');
+  const [idA, setIdA] = useState('ittf-han-yichen');
   const [idB, setIdB] = useState('');
   const [bestOf, setBestOf] = useState<BestOf>(5);
   const [result, setResult] = useState<MatchSimResult | null>(null);
@@ -52,16 +58,46 @@ export function MatchLabPage() {
     eloB: number;
   } | null>(null);
 
-  // 默认选中：现役第一 vs 国内精英樊振东
   const playerA =
     pool.find((p) => p.id === idA) ??
-    pool.find((p) => p.tier === 'active' && p.gender === 'M') ??
+    fullPool.find((p) => p.id === 'ittf-han-yichen') ??
     pool[0];
   const playerB =
     pool.find((p) => p.id === idB) ??
-    pool.find((p) => p.id === 'dom-fzd') ??
+    pool.find((p) => p.tier === 'active' && p.gender === 'M') ??
     pool.find((p) => p.id !== playerA?.id) ??
     pool[1];
+
+  async function runSearch() {
+    const q = query.trim();
+    if (q.length < 2) return;
+    setSearching(true);
+    try {
+      const resp = await fetch(`/api/players/search?q=${encodeURIComponent(q)}`, { cache: 'no-store' });
+      if (!resp.ok) throw new Error('search failed');
+      const data = (await resp.json()) as { results: Array<{ ittfId: string; name: string }> };
+      const hits = (data.results ?? []).map((r) => simPlayerFromSearch(r));
+      // 本地兜底：HAN YIchen
+      if (/han|韩|yichen|奕辰|小韩/i.test(q)) {
+        for (const f of FEATURED_ITTF_PLAYERS) {
+          if (!hits.some((h) => h.name.toUpperCase() === f.name.toUpperCase())) hits.unshift(f);
+        }
+      }
+      setSearchHits((prev) => {
+        const map = new Map<string, SimPlayer>();
+        for (const p of [...prev, ...hits]) map.set(p.name.toUpperCase(), p);
+        return [...map.values()];
+      });
+      if (hits[0]) setIdA(hits[0].id);
+    } catch {
+      if (/han|韩|yichen|奕辰|小韩/i.test(q)) {
+        setSearchHits(FEATURED_ITTF_PLAYERS);
+        setIdA('ittf-han-yichen');
+      }
+    } finally {
+      setSearching(false);
+    }
+  }
 
   function runOnce() {
     if (!playerA || !playerB || playerA.id === playerB.id) return;
@@ -76,7 +112,7 @@ export function MatchLabPage() {
   }
 
   const tierLabel = (t: SimTier) =>
-    t === 'active' ? 'ITTF现役' : t === 'domestic' ? '国内/未上榜' : '历史名将';
+    t === 'active' ? 'ITTF' : t === 'domestic' ? '国内/未上榜' : '历史名将';
 
   return (
     <div className="min-h-screen bg-tt-bg text-tt-text">
@@ -86,7 +122,7 @@ export function MatchLabPage() {
         </Link>
         <span className="text-sm font-semibold">对战模拟实验室</span>
         <span className="text-[10px] text-tt-muted font-mono ml-auto">
-          Elo · topspin-lab · 现役+名将
+          ITTF 前200 + 全库检索 · topspin-lab Elo
         </span>
       </header>
 
@@ -94,30 +130,40 @@ export function MatchLabPage() {
         <section className="panel p-4">
           <h1 className="text-lg font-semibold mb-1">球员间模拟比赛</h1>
           <p className="text-[12px] text-tt-muted leading-relaxed mb-2">
-            <strong className="text-tt-text">不二选一</strong>：ITTF 实时前 100 提供
-            <em>现役名册与积分</em>；
-            <a
-              href="https://github.com/Roni-quant/topspin-lab"
-              target="_blank"
-              rel="noreferrer"
-              className="text-tt-accent underline"
-            >
-              topspin-lab
-            </a>{' '}
-            提供 <em>Elo 期望分引擎</em>。二者是「数据 × 模型」组合。
-            另含未上榜现役高手与历史巅峰名将（跨时代为折算推演，非史实对阵）。
+            名册：ITTF 男女各前 200（bootstrap）+ ITTF 姓名检索任意收录选手 + 国内未上榜高手 +
+            历史名将。已包含 ITTF 收录女运动员 <strong className="text-tt-text">HAN YIchen（韩奕辰 / 小韩老师）</strong>。
+            引擎：topspin-lab Elo 期望分。
           </p>
           <p className="text-[11px] text-tt-muted mb-3">
-            当前名册：ITTF 现役 {activePool.length} 人 · 国内/未上榜 {DOMESTIC_ELITE.length} ·
-            历史名将 {LEGENDS.length}
-            {ittf?.source ? ` · 排名源 ${ittf.source}` : ' · 种子兜底'}
+            当前池 {fullPool.length} 人（现役榜 {activePool.length} · 检索缓存 {searchHits.length} ·
+            精选 {FEATURED_ITTF_PLAYERS.length} · 国内 {DOMESTIC_ELITE.length} · 名将 {LEGENDS.length}）
+            {ittf?.source ? ` · 源 ${ittf.source}` : ''}
           </p>
+
+          {/* ITTF 全库姓名搜索 */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && void runSearch()}
+              placeholder="搜索 ITTF 选手，如 HAN YIchen / 王楚钦"
+              className="flex-1 min-w-[12rem] bg-tt-surface border border-tt-border rounded px-2 py-2 text-sm"
+            />
+            <button
+              type="button"
+              onClick={() => void runSearch()}
+              className="btn-ghost text-xs px-3 py-2 border border-tt-border min-h-0"
+              disabled={searching}
+            >
+              {searching ? '检索中…' : 'ITTF 检索'}
+            </button>
+          </div>
 
           <div className="flex flex-wrap gap-2 mb-2">
             {(
               [
                 ['all', '全部'],
-                ['active', 'ITTF现役'],
+                ['active', 'ITTF'],
                 ['domestic', '国内/未上榜'],
                 ['legend', '历史名将'],
               ] as const
@@ -204,27 +250,18 @@ export function MatchLabPage() {
             <h2 className="text-sm font-semibold mb-2">胜率估计（800 次模拟）</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-tt-muted text-[11px]">
-                  {playerA.nameZh ?? playerA.name}
-                  <span className="ml-1 text-[9px] opacity-70">{tierLabel(playerA.tier)}</span>
-                </div>
+                <div className="text-tt-muted text-[11px]">{playerA.nameZh ?? playerA.name}</div>
                 <div className="text-2xl font-mono text-tt-accent">
                   {(batch.winRateA * 100).toFixed(1)}%
                 </div>
                 <div className="text-[10px] text-tt-muted">Elo ≈ {batch.eloA}</div>
               </div>
               <div>
-                <div className="text-tt-muted text-[11px]">
-                  {playerB.nameZh ?? playerB.name}
-                  <span className="ml-1 text-[9px] opacity-70">{tierLabel(playerB.tier)}</span>
-                </div>
+                <div className="text-tt-muted text-[11px]">{playerB.nameZh ?? playerB.name}</div>
                 <div className="text-2xl font-mono">{((1 - batch.winRateA) * 100).toFixed(1)}%</div>
                 <div className="text-[10px] text-tt-muted">Elo ≈ {batch.eloB}</div>
               </div>
             </div>
-            <p className="text-[11px] text-tt-muted mt-2">
-              Elo 先验 P(A 胜) = {(batch.prior * 100).toFixed(1)}%（topspin-lab expected_score）
-            </p>
             <div className="mt-2 h-2 rounded-full bg-tt-surface overflow-hidden flex">
               <div className="h-full bg-tt-accent" style={{ width: `${batch.winRateA * 100}%` }} />
               <div className="h-full bg-tt-muted/40" style={{ width: `${(1 - batch.winRateA) * 100}%` }} />
@@ -247,12 +284,6 @@ export function MatchLabPage() {
                 <div className="font-semibold">{result.playerB.name}</div>
                 <div className="text-[10px] text-tt-muted">Elo {result.eloB}</div>
               </div>
-            </div>
-            <div className="text-center text-sm mb-3">
-              胜者：{' '}
-              <span className="text-tt-accent font-semibold">
-                {result.winner === 'A' ? result.playerA.name : result.playerB.name}
-              </span>
             </div>
             <ul className="space-y-1">
               {result.games.map((g, i) => (

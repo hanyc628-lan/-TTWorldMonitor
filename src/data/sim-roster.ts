@@ -1,6 +1,6 @@
 /**
  * 对战模拟名册
- * - active: ITTF 现役积分榜（运行时由 API 前 100 注入）
+ * - active: ITTF 现役积分榜（运行时由 API 前 200 + 姓名搜索注入）
  * - domestic: 未上榜/退国际赛但仍活跃的高手（国乒名将等）
  * - legend: 历史不同时期著名球员（跨时代对战用，Elo 为巅峰折算）
  *
@@ -23,6 +23,7 @@ export interface SimPlayer extends Player {
 
 /** 未进当前 ITTF 公开榜、仍活跃或刚转型的高手 */
 export const DOMESTIC_ELITE: SimPlayer[] = [
+
   {
     id: 'dom-fzd',
     name: 'FAN Zhendong',
@@ -332,4 +333,60 @@ export function buildActiveFromIttf(
     ...men.slice(0, 100).map((r, i) => mapOne(r, 'M', i)),
     ...women.slice(0, 100).map((r, i) => mapOne(r, 'W', i)),
   ];
+}
+
+
+/** 始终并入模拟池的 ITTF 收录选手（可能不在当周前 200） */
+export const FEATURED_ITTF_PLAYERS: SimPlayer[] = [
+  {
+    id: 'ittf-han-yichen',
+    name: 'HAN YIchen',
+    nameZh: '韩奕辰（小韩老师）',
+    country: 'CHN',
+    gender: 'W',
+    rank: 0,
+    prevRank: 0,
+    points: 1200,
+    style: '教学/技术讲解',
+    tier: 'active',
+    era: 'ITTF 收录',
+    note: 'ITTF 官网收录女运动员；小韩老师教学直播',
+    eloOverride: 1850,
+  },
+];
+
+export function mergeSimRoster(active: SimPlayer[]): SimPlayer[] {
+  const key = (p: SimPlayer) => p.name.toUpperCase().replace(/\s+/g, '');
+  const seen = new Set<string>();
+  const out: SimPlayer[] = [];
+  for (const p of [...active, ...FEATURED_ITTF_PLAYERS, ...DOMESTIC_ELITE, ...LEGENDS]) {
+    const k = key(p);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(p);
+  }
+  return out;
+}
+
+/** 将 ITTF 搜索结果转为可模拟选手 */
+export function simPlayerFromSearch(r: {
+  ittfId: string;
+  name: string;
+  country?: string;
+  gender?: 'M' | 'W';
+  rank?: number;
+  points?: number;
+}): SimPlayer {
+  return {
+    id: `ittf-search-${r.ittfId || r.name}`,
+    name: r.name,
+    country: r.country ?? 'UNK',
+    gender: r.gender ?? 'M',
+    rank: r.rank ?? 0,
+    prevRank: r.rank ?? 0,
+    points: r.points ?? 1000,
+    tier: 'active',
+    era: 'ITTF 检索',
+    note: r.ittfId ? `ITTF ID ${r.ittfId}` : undefined,
+  };
 }
