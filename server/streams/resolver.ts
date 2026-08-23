@@ -64,6 +64,35 @@ export async function resolveDouyinHls(roomUrl: string): Promise<string | null> 
   return pickDouyinHls(html);
 }
 
+
+/** 抓取抖音直播间标题与是否在播（有 HLS 则在播） */
+export async function fetchDouyinRoomMeta(roomUrl: string): Promise<{ live: boolean; title?: string }> {
+  try {
+    const res = await fetch(roomUrl, {
+      headers: { 'User-Agent': UA, Referer: 'https://live.douyin.com/' },
+      redirect: 'follow',
+    });
+    if (!res.ok) return { live: false };
+    const html = await res.text();
+    const hls = pickDouyinHls(html);
+    let title: string | undefined;
+    const og = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
+      ?? html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:title["']/i);
+    if (og?.[1]) title = og[1].replace(/_抖音.*$/, '').trim();
+    if (!title) {
+      const m = html.match(/"title"\s*:\s*"([^"]{2,80})"/);
+      if (m) title = m[1];
+    }
+    if (!title) {
+      const m2 = html.match(/直播间标题["']?\s*[：:]\s*["']?([^"'<]{2,60})/);
+      if (m2) title = m2[1].trim();
+    }
+    return { live: Boolean(hls), title };
+  } catch {
+    return { live: false };
+  }
+}
+
 export async function resolveStream(streamId: string): Promise<ResolvedStream | null> {
   const cached = cacheGet(streamId);
   if (cached) return cached;
