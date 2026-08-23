@@ -39,7 +39,7 @@ export function LiveStreamsPanel() {
     >
       {/* 日程说明 */}
       <p className="text-[10px] text-tt-muted mb-2 leading-relaxed">
-        小韩老师：每天白天不定时直播，中午 12:20 定期直播 · 有信号时自动播放
+        小韩老师（北京时间）：9:00 / 10:40 / 12:20 三场教学直播 · 有信号时自动播放
       </p>
 
       {/* 有信号时实时播放（优先小韩老师） */}

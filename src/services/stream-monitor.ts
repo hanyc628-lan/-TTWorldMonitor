@@ -18,16 +18,11 @@ function beijingMinutes(d = new Date()): number {
   return bj.getHours() * 60 + bj.getMinutes();
 }
 
-/** 小韩老师日程：白天不定时 + 12:20 定期 */
+/** 小韩老师三场直播（北京时间）：9:00 / 10:40 / 12:20 */
 export function isXiaohanScheduleLive(now = new Date()): boolean {
   const m = beijingMinutes(now);
-  // 12:10–13:05 定期窗口
-  if (m >= 12 * 60 + 10 && m < 13 * 60 + 5) return true;
-  // 白天 9:00–18:00
-  if (m >= 9 * 60 && m < 18 * 60) return true;
-  // 晚间 19:00–22:59
-  if (m >= 19 * 60 && m < 23 * 60) return true;
-  return false;
+  const sessions = [9 * 60, 10 * 60 + 40, 12 * 60 + 20];
+  return sessions.some((start) => m >= start - 5 && m < start + 45);
 }
 
 function simulateStreamStatuses(sources: LiveStreamSource[]): StreamStatus[] {

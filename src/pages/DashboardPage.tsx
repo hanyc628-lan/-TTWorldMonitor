@@ -99,6 +99,10 @@ export function DashboardPage() {
           🔬 {t('dashboard.analysis')}
         </Link>
 
+        <Link to="/match-lab" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden sm:inline">
+          🏓 对战模拟
+        </Link>
+
         <Link to="/motion-lab" className="btn-ghost text-xs text-tt-accent2 px-2 py-1.5 whitespace-nowrap hidden xs:inline">
           🎬
         </Link>

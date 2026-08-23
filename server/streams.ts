@@ -1,27 +1,19 @@
 import { STREAM_SOURCES } from '../src/config/stream-sources.js';
 import { resolveDouyinHls } from './streams/resolver.js';
 
-/** 小韩老师：白天不定时 + 中午 12:20 窗口（北京时间） */
+/** 小韩老师三场直播窗口（北京时间）：9:00 / 10:40 / 12:20 */
 export function isXiaohanScheduleLive(now = new Date()): boolean {
-  // 使用本地时间；Render 服务器若为 UTC，按 UTC+8 换算
   const utcH = now.getUTCHours();
   const utcM = now.getUTCMinutes();
-  // 北京时间 = UTC+8
   const bjMinTotal = ((utcH + 8) % 24) * 60 + utcM;
-  const bjH = Math.floor(bjMinTotal / 60);
-  const bjM = bjMinTotal % 60;
 
-  // 中午 12:20 定期窗口：12:10–13:00
-  if (bjH === 12 && bjM >= 10) return true;
-  if (bjH === 13 && bjM < 5) return true;
-
-  // 白天不定时：9:00–18:00 提高在播概率（真实探测优先）
-  if (bjH >= 9 && bjH < 18) return true;
-
-  // 晚间教学补充窗口
-  if (bjH >= 19 && bjH <= 22) return true;
-
-  return false;
+  // 每场约 50 分钟窗口：开播前 5 分 ~ 开播后 45 分
+  const sessions = [
+    9 * 60,        // 9:00
+    10 * 60 + 40,  // 10:40
+    12 * 60 + 20,  // 12:20
+  ];
+  return sessions.some((start) => bjMinTotal >= start - 5 && bjMinTotal < start + 45);
 }
 
 /**
