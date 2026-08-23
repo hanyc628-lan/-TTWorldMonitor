@@ -1,27 +1,67 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TOP_MEN, TOP_WOMEN } from '@/data/seed';
+import {
+  DOMESTIC_ELITE,
+  LEGENDS,
+  buildActiveFromIttf,
+  type SimPlayer,
+  type SimTier,
+} from '@/data/sim-roster';
 import { estimateWinRate, simulateMatch, type BestOf, type MatchSimResult } from '@/services/match-sim';
-import type { Player } from '@/types';
-import { useT } from '@/i18n';
+import { useAppStore } from '@/store/app';
 
-const ALL = [...TOP_MEN, ...TOP_WOMEN];
+type PoolFilter = 'all' | SimTier;
 
 export function MatchLabPage() {
-  const t = useT();
-  const [gender, setGender] = useState<'M' | 'W' | 'all'>('M');
-  const pool = useMemo(
-    () => (gender === 'all' ? ALL : ALL.filter((p) => p.gender === gender)),
-    [gender],
+  const ittf = useAppStore((s) => s.ittfRankings);
+
+  const activePool: SimPlayer[] = useMemo(() => {
+    if (ittf?.men?.length || ittf?.women?.length) {
+      return buildActiveFromIttf(ittf.men ?? [], ittf.women ?? []);
+    }
+    // 无 API 时用种子前排兜底
+    return buildActiveFromIttf(
+      TOP_MEN.map((p) => ({ name: p.name, country: p.country, rank: p.rank, points: p.points })),
+      TOP_WOMEN.map((p) => ({ name: p.name, country: p.country, rank: p.rank, points: p.points })),
+    );
+  }, [ittf]);
+
+  const fullPool = useMemo(
+    () => [...activePool, ...DOMESTIC_ELITE, ...LEGENDS],
+    [activePool],
   );
-  const [idA, setIdA] = useState(TOP_MEN[0]?.id ?? '');
-  const [idB, setIdB] = useState(TOP_MEN[1]?.id ?? '');
+
+  const [filter, setFilter] = useState<PoolFilter>('all');
+  const [gender, setGender] = useState<'M' | 'W' | 'all'>('all');
+  const pool = useMemo(() => {
+    let list = fullPool;
+    if (filter !== 'all') list = list.filter((p) => p.tier === filter);
+    if (gender !== 'all') list = list.filter((p) => p.gender === gender);
+    return list;
+  }, [fullPool, filter, gender]);
+
+  const [idA, setIdA] = useState('');
+  const [idB, setIdB] = useState('');
   const [bestOf, setBestOf] = useState<BestOf>(5);
   const [result, setResult] = useState<MatchSimResult | null>(null);
-  const [batch, setBatch] = useState<{ winRateA: number; prior: number; eloA: number; eloB: number } | null>(null);
+  const [batch, setBatch] = useState<{
+    winRateA: number;
+    prior: number;
+    eloA: number;
+    eloB: number;
+  } | null>(null);
 
-  const playerA = pool.find((p) => p.id === idA) ?? pool[0];
-  const playerB = pool.find((p) => p.id === idB) ?? pool[1];
+  // 默认选中：现役第一 vs 国内精英樊振东
+  const playerA =
+    pool.find((p) => p.id === idA) ??
+    pool.find((p) => p.tier === 'active' && p.gender === 'M') ??
+    pool[0];
+  const playerB =
+    pool.find((p) => p.id === idB) ??
+    pool.find((p) => p.id === 'dom-fzd') ??
+    pool.find((p) => p.id !== playerA?.id) ??
+    pool[1];
 
   function runOnce() {
     if (!playerA || !playerB || playerA.id === playerB.id) return;
@@ -31,10 +71,12 @@ export function MatchLabPage() {
 
   function runBatch() {
     if (!playerA || !playerB || playerA.id === playerB.id) return;
-    const r = estimateWinRate(playerA, playerB, bestOf, 800);
-    setBatch(r);
+    setBatch(estimateWinRate(playerA, playerB, bestOf, 800));
     setResult(null);
   }
+
+  const tierLabel = (t: SimTier) =>
+    t === 'active' ? 'ITTF现役' : t === 'domestic' ? '国内/未上榜' : '历史名将';
 
   return (
     <div className="min-h-screen bg-tt-bg text-tt-text">
@@ -44,15 +86,16 @@ export function MatchLabPage() {
         </Link>
         <span className="text-sm font-semibold">对战模拟实验室</span>
         <span className="text-[10px] text-tt-muted font-mono ml-auto">
-          Elo · topspin-lab
+          Elo · topspin-lab · 现役+名将
         </span>
       </header>
 
       <main className="max-w-3xl mx-auto p-4 space-y-4">
         <section className="panel p-4">
           <h1 className="text-lg font-semibold mb-1">球员间模拟比赛</h1>
-          <p className="text-[12px] text-tt-muted leading-relaxed mb-3">
-            基于{' '}
+          <p className="text-[12px] text-tt-muted leading-relaxed mb-2">
+            <strong className="text-tt-text">不二选一</strong>：ITTF 实时前 100 提供
+            <em>现役名册与积分</em>；
             <a
               href="https://github.com/Roni-quant/topspin-lab"
               target="_blank"
@@ -61,12 +104,40 @@ export function MatchLabPage() {
             >
               topspin-lab
             </a>{' '}
-            的 Elo 期望分公式，结合 ITTF 积分/排名映射与局分 Monte Carlo，模拟单打对决。
-            结果仅供分析娱乐，非官方赛果。
+            提供 <em>Elo 期望分引擎</em>。二者是「数据 × 模型」组合。
+            另含未上榜现役高手与历史巅峰名将（跨时代为折算推演，非史实对阵）。
+          </p>
+          <p className="text-[11px] text-tt-muted mb-3">
+            当前名册：ITTF 现役 {activePool.length} 人 · 国内/未上榜 {DOMESTIC_ELITE.length} ·
+            历史名将 {LEGENDS.length}
+            {ittf?.source ? ` · 排名源 ${ittf.source}` : ' · 种子兜底'}
           </p>
 
+          <div className="flex flex-wrap gap-2 mb-2">
+            {(
+              [
+                ['all', '全部'],
+                ['active', 'ITTF现役'],
+                ['domestic', '国内/未上榜'],
+                ['legend', '历史名将'],
+              ] as const
+            ).map(([k, label]) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => setFilter(k)}
+                className={`text-xs px-2 py-1 rounded border ${
+                  filter === k
+                    ? 'bg-tt-accent/20 text-tt-accent border-tt-accent/40'
+                    : 'border-tt-border text-tt-muted'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="flex flex-wrap gap-2 mb-3">
-            {(['M', 'W', 'all'] as const).map((g) => (
+            {(['all', 'M', 'W'] as const).map((g) => (
               <button
                 key={g}
                 type="button"
@@ -77,7 +148,7 @@ export function MatchLabPage() {
                     : 'border-tt-border text-tt-muted'
                 }`}
               >
-                {g === 'M' ? '男子' : g === 'W' ? '女子' : '全部'}
+                {g === 'all' ? '男女' : g === 'M' ? '男子' : '女子'}
               </button>
             ))}
             <span className="text-xs text-tt-muted self-center ml-2">赛制</span>
@@ -98,8 +169,20 @@ export function MatchLabPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-            <PlayerSelect label="选手 A" value={idA} pool={pool} onChange={setIdA} />
-            <PlayerSelect label="选手 B" value={idB} pool={pool} onChange={setIdB} />
+            <PlayerSelect
+              label="选手 A"
+              value={playerA?.id ?? ''}
+              pool={pool}
+              onChange={setIdA}
+              tierLabel={tierLabel}
+            />
+            <PlayerSelect
+              label="选手 B"
+              value={playerB?.id ?? ''}
+              pool={pool}
+              onChange={setIdB}
+              tierLabel={tierLabel}
+            />
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -121,12 +204,20 @@ export function MatchLabPage() {
             <h2 className="text-sm font-semibold mb-2">胜率估计（800 次模拟）</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div>
-                <div className="text-tt-muted text-[11px]">{playerA.name}</div>
-                <div className="text-2xl font-mono text-tt-accent">{(batch.winRateA * 100).toFixed(1)}%</div>
+                <div className="text-tt-muted text-[11px]">
+                  {playerA.nameZh ?? playerA.name}
+                  <span className="ml-1 text-[9px] opacity-70">{tierLabel(playerA.tier)}</span>
+                </div>
+                <div className="text-2xl font-mono text-tt-accent">
+                  {(batch.winRateA * 100).toFixed(1)}%
+                </div>
                 <div className="text-[10px] text-tt-muted">Elo ≈ {batch.eloA}</div>
               </div>
               <div>
-                <div className="text-tt-muted text-[11px]">{playerB.name}</div>
+                <div className="text-tt-muted text-[11px]">
+                  {playerB.nameZh ?? playerB.name}
+                  <span className="ml-1 text-[9px] opacity-70">{tierLabel(playerB.tier)}</span>
+                </div>
                 <div className="text-2xl font-mono">{((1 - batch.winRateA) * 100).toFixed(1)}%</div>
                 <div className="text-[10px] text-tt-muted">Elo ≈ {batch.eloB}</div>
               </div>
@@ -147,18 +238,14 @@ export function MatchLabPage() {
             <div className="flex items-center justify-between mb-3">
               <div className="text-center flex-1">
                 <div className="font-semibold">{result.playerA.name}</div>
-                <div className="text-[10px] text-tt-muted">
-                  #{result.playerA.rank} · {result.playerA.points} pts · Elo {result.eloA}
-                </div>
+                <div className="text-[10px] text-tt-muted">Elo {result.eloA}</div>
               </div>
               <div className="text-2xl font-mono px-3">
                 {result.gamesWonA} : {result.gamesWonB}
               </div>
               <div className="text-center flex-1">
                 <div className="font-semibold">{result.playerB.name}</div>
-                <div className="text-[10px] text-tt-muted">
-                  #{result.playerB.rank} · {result.playerB.points} pts · Elo {result.eloB}
-                </div>
+                <div className="text-[10px] text-tt-muted">Elo {result.eloB}</div>
               </div>
             </div>
             <div className="text-center text-sm mb-3">
@@ -166,19 +253,16 @@ export function MatchLabPage() {
               <span className="text-tt-accent font-semibold">
                 {result.winner === 'A' ? result.playerA.name : result.playerB.name}
               </span>
-              <span className="text-[10px] text-tt-muted ml-2">
-                先验 {(result.priorWinProbA * 100).toFixed(0)}%
-              </span>
             </div>
             <ul className="space-y-1">
               {result.games.map((g, i) => (
-                <li key={i} className="flex justify-between text-xs font-mono px-2 py-1 rounded bg-tt-surface/50">
+                <li
+                  key={i}
+                  className="flex justify-between text-xs font-mono px-2 py-1 rounded bg-tt-surface/50"
+                >
                   <span>第 {i + 1} 局</span>
                   <span>
                     {g.scoreA} - {g.scoreB}
-                  </span>
-                  <span className={g.winner === 'A' ? 'text-tt-accent' : 'text-tt-muted'}>
-                    {g.winner === 'A' ? result.playerA.name.split(' ').pop() : result.playerB.name.split(' ').pop()}
                   </span>
                 </li>
               ))}
@@ -196,11 +280,13 @@ function PlayerSelect({
   value,
   pool,
   onChange,
+  tierLabel,
 }: {
   label: string;
   value: string;
-  pool: Player[];
+  pool: SimPlayer[];
   onChange: (id: string) => void;
+  tierLabel: (t: SimTier) => string;
 }) {
   return (
     <label className="block text-xs">
@@ -212,7 +298,10 @@ function PlayerSelect({
       >
         {pool.map((p) => (
           <option key={p.id} value={p.id}>
-            #{p.rank} {p.name} ({p.country}) · {p.points}
+            [{tierLabel(p.tier)}] {p.nameZh ? `${p.nameZh} · ` : ''}
+            {p.name}
+            {p.era ? ` · ${p.era}` : ''}
+            {p.rank > 0 ? ` · #${p.rank}` : ''}
           </option>
         ))}
       </select>
